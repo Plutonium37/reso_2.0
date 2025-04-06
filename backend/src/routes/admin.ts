@@ -74,10 +74,10 @@ router.put(
   }
 );
 
-
 interface CustomRequestGetEvent extends Request {
   adminId?: number;
 }
+//admin get their event details
 router.get(
   "/event",
   adminValidate,
@@ -86,9 +86,64 @@ router.get(
     try {
       const eventDetails = await prisma.admin.findUnique({
         where: { id: adminId },
-        include:{
-          event:true
-        }
+        include: {
+          event: true,
+        },
+      });
+
+      res
+        .status(200)
+        .json({ message: "Get details  successfully", eventDetails });
+      return;
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error", error });
+      return;
+    }
+  }
+);
+
+interface CustomRequestGetEventUser extends Request {
+  eventId?: number;
+}
+router.get(
+  "/user-details",
+  adminValidate,
+  async (req: CustomRequestGetEventUser, res: Response) => {
+    const { eventId } = req;
+    try {
+      const eventDetails = await prisma.registration.findMany({
+        where: { eventId: eventId! },
+        select: {
+          createdAt: true,
+          name: true,
+          gender: true,
+          contact: true,
+          address: true,
+          individual: true,
+          transactionId: true,
+          bankingName: true,
+          paymentUrl: true,
+          approved: true,
+          event: {
+            select: {
+              event: true,
+              date: true,
+              description: true,
+              fee: true,
+            },
+          },
+          user: {
+            select: {
+              email: true,
+            },
+          },
+          team: {
+            select: {
+              teamName: true,
+              players: true,
+            },
+          },
+        },
       });
 
       res

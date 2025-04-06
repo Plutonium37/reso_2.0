@@ -60,7 +60,6 @@ export const adminSigninMiddleware = async (
 
 interface CustomRequestEvent extends Request {
   email?: string;
-  role?: "ADMIN";
   adminId?: number;
   eventId?: number;
   updatedData?: Partial<Event>;
@@ -73,13 +72,8 @@ export const adminEventMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const { role, email, eventId } = req;
+    const {  email, eventId } = req;
     const { event, date, description, paymentQr, fee} = req.body;
-
-    if (role !== "ADMIN") {
-      res.status(403).json({ message: "Forbidden: You're not an ADMIN" });
-      return;
-    }
 
     // Find Admin in Database
     const admin = await prisma.admin.findUnique({

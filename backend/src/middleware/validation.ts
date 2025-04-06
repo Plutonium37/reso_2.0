@@ -29,6 +29,10 @@ export const userValidate = (
       role: "USER";
       uid: number;
     };
+    if (verified.role !== "USER") {
+      res.status(403).json({ message: "Forbidden: You're not an USER" });
+      return;
+    }
     req.email = verified.email;
     req.role = verified.role;
     req.userId = verified.uid;
@@ -58,6 +62,10 @@ export const validate = (
       email: string;
       role: "SUPERADMIN";
     };
+    if (verified.role !== "SUPERADMIN") {
+      res.status(403).json({ message: "Forbidden: You're not an SUPERADMIN" });
+      return;
+    }
     req.email = verified.email;
     req.role = verified.role;
     next();
@@ -91,6 +99,10 @@ export const adminValidate = (
       id: number;
       eventId: number;
     };
+    if (verified.role !== "ADMIN") {
+      res.status(403).json({ message: "Forbidden: You're not an ADMIN" });
+      return;
+    }
     req.email = verified.email;
     req.role = verified.role;
     req.adminId = verified.id;

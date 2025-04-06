@@ -1,17 +1,18 @@
-import Input from "../Input";
 import Button from "../Button";
+import Input from "../Input";
 import Gender from "../Gender";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useState } from "react";
 
-interface CommonFormProps {
+interface Props {
   event?: string;
 }
 
-const CommonForm: React.FC<CommonFormProps> = ({ event }) => {
+const CommonForm: React.FC<Props> = (event) => {
   const [showPayment, setShowPayment] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -34,7 +35,7 @@ const CommonForm: React.FC<CommonFormProps> = ({ event }) => {
 
   const onSubmit = (data: any) => {
     if (showPayment) {
-      console.log(data)
+      console.log(data);
       eventRegister(data);
     } else {
       setShowPayment(true);
@@ -43,44 +44,49 @@ const CommonForm: React.FC<CommonFormProps> = ({ event }) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
         {!showPayment ? (
           <>
-            <div id="teamleader" className="mt-5">
-              <label className="text-white text-2xl pt-7">Details :</label>
+            <div id="details" className="mt-5">
+              <label htmlFor="details" className="text-white text-2xl pt-5">
+                Details:
+              </label>
               <Input
                 label="Name"
-                id="name"
+                id="Name"
                 type="text"
-                register={register("name", {
+                register={register("Name", {
                   required: "Name is required",
                 })}
-                error={errors.name?.message as string | undefined}
+                error={errors.Name?.message as string | undefined}
               />
+
               <Gender
                 register={register("gender", {
                   required: "Gender is required",
                 })}
                 error={errors.gender?.message as string}
               />
-              <Input
-                label="Address"
-                id="address"
-                type="text"
-                register={register("address", {
-                  required: "Address is required",
-                })}
-                error={errors.address?.message as string | undefined}
-              />
-              <Input
-                label="Contact no."
-                id="contact"
-                type="number"
-                register={register("contact", {
-                  required: "Contact number is required",
-                })}
-                error={errors.contact?.message as string | undefined}
-              />
+              <div>
+                <Input
+                  label="Address"
+                  id="address"
+                  type="text"
+                  register={register("address", {
+                    required: "Address is required",
+                  })}
+                  error={errors.address?.message as string | undefined}
+                />
+                <Input
+                  label="Contact no."
+                  id="contact"
+                  type="number"
+                  register={register("contact", {
+                    required: "Contact number is required",
+                  })}
+                  error={errors.contact?.message as string | undefined}
+                />
+              </div>
             </div>
             <div className="flex items-center justify-center">
               <Button label={"Continue"} type={"submit"} />
@@ -97,7 +103,7 @@ const CommonForm: React.FC<CommonFormProps> = ({ event }) => {
 
             {/* Transaction ID */}
             <Input
-              label="UPI Transaction ID"
+              label="Transaction ID"
               id="transactionId"
               type="text"
               register={register("transactionId", {
@@ -167,7 +173,6 @@ const CommonForm: React.FC<CommonFormProps> = ({ event }) => {
                 </p>
               )}
             </div>
-
             <div className="flex justify-between mt-4">
               <Button
                 label="Back"

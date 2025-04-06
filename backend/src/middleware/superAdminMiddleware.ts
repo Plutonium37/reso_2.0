@@ -124,13 +124,7 @@ export const createEventWithAdmin = async (
   next: NextFunction
 ) => {
   try {
-    const { email, role } = req;
-
-    // Role validation: Only SUPERADMIN can proceed
-    if (role !== "SUPERADMIN") {
-      res.status(403).json({ message: "Forbidden: You're not a SUPERADMIN" });
-      return;
-    }
+    const { email } = req;
 
     //Checking if SUPERADMIN exists
     const superadminExist = await prisma.sadmin.findUnique({

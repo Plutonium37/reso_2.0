@@ -19,6 +19,7 @@ interface CostomRequestSignup extends Request {
   name?: string;
   password?: string;
 }
+//super  admin sign up route
 router.post(
   "/signup",
   sAdminSignupMiddleware,
@@ -97,7 +98,7 @@ interface CostomRequest extends Request {
   paymentQr?: string;
   fee?: number
 }
-
+// super admin create both admin and event at the same time
 router.post(
   "/event-admin",
   validate,

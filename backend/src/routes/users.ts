@@ -8,9 +8,8 @@ import {
 } from "../middleware/usersMiddleware";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { userValidate, stringSchema} from "../middleware/validation";
+import { userValidate, stringSchema } from "../middleware/validation";
 dotenv.config();
-
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -142,7 +141,7 @@ router.post(
 
       // If individual registration
       if (individual) {
-        const registrationDetails = await prisma.registration.create({
+        await prisma.registration.create({
           data: {
             gender: individual ? gender! : null,
             name: name!,
@@ -159,7 +158,6 @@ router.post(
 
         res.status(201).json({
           message: "Individual registration successful",
-          registrationDetails,
         });
         return;
       }
@@ -187,22 +185,13 @@ router.post(
           },
         });
 
-        const team = await prisma.team.create({
+        await prisma.team.create({
           data: {
             teamName: teamName!,
             players: JSON.stringify(players),
             registrationId: registration.id,
           },
         });
-
-        const eventUser = await prisma.eventUser.create({
-          data: {
-            eventId: eventId!,
-            registrationId: registration.id,
-            email: email!,
-          },
-        });
-        return [registration, team, eventUser];
       });
       res.status(201).json({
         message: "Team registration successful",
@@ -217,7 +206,7 @@ router.post(
 );
 
 interface CustomRequestRegister extends Request {
-  email?: string;
+  uid?: number;
 }
 
 //get user event registered details
@@ -225,33 +214,40 @@ router.get(
   "/registered",
   userValidate,
   async (req: CustomRequestRegister, res: Response) => {
-    const { email } = req;
+    const { uid } = req;
     try {
-      const registeredDetails = await prisma.eventUser.findMany({
-        where: { email: email },
+      const registeredDetails = await prisma.registration.findMany({
+        where: { userId: uid },
         select: {
-          email: true,
-          registrationId: true,
+          createdAt: true,
+          name: true,
+          gender: true,
+          contact: true,
+          address: true,
+          individual:true,
+          transactionId: true,
+          bankingName: true,
+          paymentUrl: true,
+          approved: true,
           event: {
             select: {
               event: true,
               date: true,
               description: true,
+              fee: true,
             },
           },
-          registration: {
-            select: {
-              createdAt: true,
-              name: true,
-              gender: true,
-              contact: true,
-              address: true,
-              transactionId: true,
-              bankingName: true,
-              paymentUrl: true,
-              approved: true,
-            },
+          user:{
+            select:{
+              email:true
+            }
           },
+          team:{
+            select:{
+              teamName:true,
+              players:true
+            }
+          }
         },
       });
 
@@ -267,7 +263,7 @@ router.get(
 );
 
 interface CustomRequestCheck extends Request {
-  email?: string;
+  uid?: number;
 }
 
 // check user is regitered to a specific event or not
@@ -275,18 +271,18 @@ router.get(
   "/check",
   userValidate,
   async (req: CustomRequestCheck, res: Response) => {
-    const { email } = req;
+    const { uid } = req;
     const event = req.body;
     try {
       //event parsed or validation
       const eventParsed = stringSchema.safeParse(event);
-          if (!eventParsed.success) {
-            res.status(400).json({
-              message: "Invalid event",
-              error: eventParsed.error.format()._errors.join(", "),
-            });
-            return;
-          }
+      if (!eventParsed.success) {
+        res.status(400).json({
+          message: "Invalid event",
+          error: eventParsed.error.format()._errors.join(", "),
+        });
+        return;
+      }
       // getting event details
       const eventExist = await prisma.event.findUnique({
         where: { event: event },
@@ -297,8 +293,8 @@ router.get(
         return;
       }
       // getting data for the event registered by the user
-      const registeredDetails = await prisma.eventUser.findMany({
-        where: { email: email },
+      const registeredDetails = await prisma.registration.findMany({
+        where: { userId: uid }
       });
       // filtering out if user already registered or not
       const filtered = registeredDetails.filter(
@@ -313,7 +309,11 @@ router.get(
       }
       res
         .status(200)
-        .json({ message: "Not Registered Yet", fee: eventExist.fee , eventRegistered: false});
+        .json({
+          message: "Not Registered Yet",
+          fee: eventExist.fee,
+          eventRegistered: false,
+        });
       return;
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error", error });

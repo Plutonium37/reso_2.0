@@ -142,8 +142,7 @@ interface Player {
 }
 
 interface CustomRequest extends Request {
-  email?: string;
-  role?: "USER";
+  uid?: number;
   event?: string;
   gender?: "male" | "female" | "other" | null;
   name?: string;
@@ -165,11 +164,8 @@ export const userRegisterMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const { role,email } = req;
-    if (role !== "USER") {
-      res.status(403).json({ message: "Forbidden: You're not a USER" });
-      return;
-    }
+    const { uid } = req;
+    
 
     const {
       event,
@@ -273,8 +269,8 @@ export const userRegisterMiddleware = async (
       return;
     }
 
-    const registeredDetails = await prisma.eventUser.findMany({
-      where: { email: email },
+    const registeredDetails = await prisma.registration.findMany({
+      where: { userId: uid },
     });
     
     const filtered = registeredDetails.filter(item => item.eventId === eventExist.id);

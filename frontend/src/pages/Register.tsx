@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Select from "react-select";
-import Pubg from "../components/Forms/Bgmi";
+import Bgmi from "../components/Forms/Bgmi";
 import MobileLegend from "../components/Forms/MobileLegend";
 import { Quantum } from "ldrs/react";
 import CommonForm from "../components/Forms/CommonForm";
@@ -82,7 +82,7 @@ const Register = () => {
 
   // Mapping special components
   const specialComponents: Record<string, React.ElementType> = {
-    bgmi: Pubg,
+    bgmi: Bgmi,
     mobile_legend: MobileLegend,
   };
 

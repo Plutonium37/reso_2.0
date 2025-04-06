@@ -1,5 +1,5 @@
-import Input from "../Input";
 import Button from "../Button";
+import Input from "../Input";
 import Gender from "../Gender";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
@@ -10,8 +10,9 @@ interface Props {
   event?: string;
 }
 
-const Bgmi: React.FC<Props> = ({ event }) => {
+const Bgmi: React.FC<Props> = (event) => {
   const [showPayment, setShowPayment] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -34,7 +35,7 @@ const Bgmi: React.FC<Props> = ({ event }) => {
 
   const onSubmit = (data: any) => {
     if (showPayment) {
-      console.log(data)
+      console.log(data);
       eventRegister(data);
     } else {
       setShowPayment(true);
@@ -43,7 +44,7 @@ const Bgmi: React.FC<Props> = ({ event }) => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
         {!showPayment ? (
           <>
             <label className="text-white text-2xl pt-7">Team Details :</label>
@@ -184,40 +185,39 @@ const Bgmi: React.FC<Props> = ({ event }) => {
                 error={errors.contact?.message as string | undefined}
               />
             </div>
-            <div className="flex items-center justify-center mt-4">
+            <div className="flex items-center justify-center">
               <Button label={"Continue"} type={"submit"} />
             </div>
           </>
         ) : (
-          <>
-            <label className="text-white text-2xl pt-7">
-              Payment Details :
-            </label>
-            <div className="grid gap-4 mt-4">
-              <img
-                src="/images/payment-qr.png"
-                alt="Payment QR"
-                className="w-48 h-48 mx-auto"
-              />
-              <Input
-                label="Transaction ID"
-                id="transactionId"
-                type="text"
-                register={register("transactionId", {
-                  required: "Transaction ID is required",
-                })}
-                error={errors.transactionId?.message as string | undefined}
-              />
-              <Input
-                label="Banking Name"
-                id="bankingName"
-                type="text"
-                register={register("bankingName", {
-                  required: "Banking Name is required",
-                })}
-                error={errors.bankingName?.message as string}
-              />
-              {/* Payment Screenshot Upload */}
+          <div className="bg-zinc-800 p-6 rounded-md shadow-lg">
+            <h2 className="text-white text-xl font-bold mb-4">
+              Payment Section
+            </h2>
+
+            {/* QR Code Image */}
+            <img src="/s.jpg" alt="Payment QR" className="w-48 mx-auto mb-4" />
+
+            {/* Transaction ID */}
+            <Input
+              label="Transaction ID"
+              id="transactionId"
+              type="text"
+              register={register("transactionId", {
+                required: "Transaction ID is required",
+              })}
+              error={errors.transactionId?.message as string}
+            />
+            <Input
+              label="Banking Name"
+              id="bankingName"
+              type="text"
+              register={register("bankingName", {
+                required: "Banking Name is required",
+              })}
+              error={errors.bankingName?.message as string}
+            />
+            {/* Payment Screenshot Upload */}
             <div className="mt-4">
               <label
                 className="text-white block mb-2"
@@ -270,16 +270,15 @@ const Bgmi: React.FC<Props> = ({ event }) => {
                 </p>
               )}
             </div>
-              <div className="flex justify-between mt-4">
-                <Button
-                  label="Back"
-                  type="button"
-                  onClick={() => setShowPayment(false)}
-                />
-                <Button label="Register" type="submit" />
-              </div>
+            <div className="flex justify-between mt-4">
+              <Button
+                label="Back"
+                type="button"
+                onClick={() => setShowPayment(false)}
+              />
+              <Button label="Register" type="submit" />
             </div>
-          </>
+          </div>
         )}
       </form>
     </div>
