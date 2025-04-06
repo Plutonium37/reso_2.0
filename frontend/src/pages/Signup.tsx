@@ -4,6 +4,9 @@ import { toast } from "react-hot-toast";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import axios from "axios";
+import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { useState } from "react";
+
 const Signup = () => {
   const {
     register,
@@ -11,6 +14,10 @@ const Signup = () => {
     watch,
     formState: { errors },
   } = useForm();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const password = watch("password");
+
   const signUp = async (data: any) => {
     try {
       const response = await axios.post("http://localhost:4000/users/signup", {
@@ -30,11 +37,9 @@ const Signup = () => {
     signUp(data);
   };
 
-  const password = watch("password");
-
   return (
     <div className="h-screen bg-black flex items-center justify-center">
-      <div className="mb-4 sm:w-3/5 md:w-2/5 lg:w-1/5 opacity-80 bg-zinc-950 py-6 px-6 rounded-xl drop-shadow-[0_0_20px_rgba(255,100,0,0.8)] shadow-[0_0_20px_rgba(255,100,0,0.8)]">
+      <div className="mb-4  sm:w-3/5 md:w-2/5 lg:w-1/4 opacity-80 bg-zinc-950 py-6 px-6 rounded-xl drop-shadow-[0_0_20px_rgba(255,100,0,0.8)] shadow-[0_0_20px_rgba(255,100,0,0.8)]">
         <h1 className="text-3xl font-bold text-center text-white mb-5">
           Sign Up
         </h1>
@@ -67,17 +72,32 @@ const Signup = () => {
                 error={errors.email?.message as string | undefined}
               />
 
-              <Input
-                label="Password"
-                id="password"
-                type="password"
-                register={register("password", {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "At least 6 characters" },
-                  maxLength: { value: 30, message: "At most 30 characters" },
-                })}
-                error={errors.password?.message as string | undefined}
-              />
+              <div className="relative">
+                <Input
+                  label="Password"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  register={register("password", {
+                    required: "Password is required",
+                    minLength: { value: 6, message: "At least 6 characters" },
+                    maxLength: { value: 30, message: "At most 30 characters" },
+                  })}
+                  error={errors.password?.message as string | undefined}
+                />
+                {password && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-18 mr-2 right-3 -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    {showPassword ? (
+                      <LuEye size={20} />
+                    ) : (
+                      <LuEyeClosed size={20} />
+                    )}
+                  </button>
+                )}
+              </div>
 
               <Input
                 label="Re-enter Password"
