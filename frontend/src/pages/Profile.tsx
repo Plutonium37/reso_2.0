@@ -47,12 +47,7 @@ const Profile = () => {
 
   const Sidebar = () => (
     <div className="w-full md:w-64 bg-zinc-900 shadow-md shadow-red-500/50 p-6 rounded-lg h-full flex flex-col justify-start">
-      <div className="flex flex-col items-center text-center mb-6">
-      <img
-          src={profile?.image || "https://via.placeholder.com/100"}
-          alt="Profile"
-          className="w-24 h-24 rounded-full border-2 border-red-500 object-cover mb-3"
-        />
+      <div className="flex  text-left mb-6">
         <h2 className="text-xl font-semibold text-red-500">
           Hello, {profile?.name || "N/A"}
         </h2>
@@ -102,7 +97,11 @@ const Profile = () => {
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           className="text-white"
         >
-          {isMobileMenuOpen ? <IoClose size={28} /> : <FaAlignJustify size={24} />}
+          {isMobileMenuOpen ? (
+            <IoClose size={28} />
+          ) : (
+            <FaAlignJustify size={24} />
+          )}
         </button>
       </div>
 
@@ -134,11 +133,15 @@ const Profile = () => {
                     <div className="space-y-6">
                       <div className="flex flex-col md:flex-row md:justify-between">
                         <h2 className="text-lg font-semibold">Name</h2>
-                        <p className="text-gray-400">{profile?.name || "N/A"}</p>
+                        <p className="text-gray-400">
+                          {profile?.name || "N/A"}
+                        </p>
                       </div>
                       <div className="flex flex-col md:flex-row md:justify-between">
                         <h2 className="text-lg font-semibold">Email Address</h2>
-                        <p className="text-gray-400">{profile?.email || "N/A"}</p>
+                        <p className="text-gray-400">
+                          {profile?.email || "N/A"}
+                        </p>
                       </div>
                     </div>
                   </div>
