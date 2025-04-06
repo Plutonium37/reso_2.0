@@ -4,13 +4,20 @@ import Input from "../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import { LuEye, LuEyeClosed } from "react-icons/lu";
+import { useState } from "react";
 
 const Signin = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const password = watch("password");
+
 
   const signIn = async (data: any) => {
     try {
@@ -53,18 +60,33 @@ const Signin = () => {
                 })}
                 error={errors.email?.message as string | undefined}
               />
+              <div className="relative">
+                <Input
+                  label="Password"
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  register={register("password", {
+                    required: "Password is required",
+                    minLength: { value: 6, message: "At least 6 characters" },
+                    maxLength: { value: 30, message: "At most 30 characters" },
+                  })}
+                  error={errors.password?.message as string | undefined}
+                />
 
-              <Input
-                label="Password"
-                id="password"
-                type="password"
-                register={register("password", {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "At least 6 characters" },
-                  maxLength: { value: 30, message: "At most 30 characters" },
-                })}
-                error={errors.password?.message as string | undefined}
-              />
+{password && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-18 mr-2 right-3 -translate-y-1/2 text-gray-400 hover:text-white"
+                  >
+                    {showPassword ? (
+                      <LuEye size={20} />
+                    ) : (
+                      <LuEyeClosed size={20} />
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
             <Button label={"Sign In"} type={"submit"} />
           </div>
