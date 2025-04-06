@@ -153,8 +153,7 @@ interface CustomRequest extends Request {
   players?: Player[];
   bankingName?: string;
   transactionId?: string;
-  paymentProof?: string;
-  eventId?:number
+  eventId?: number;
 }
 
 //user event register Middleware
@@ -165,7 +164,6 @@ export const userRegisterMiddleware = async (
 ) => {
   try {
     const { uid } = req;
-    
 
     const {
       event,
@@ -176,7 +174,6 @@ export const userRegisterMiddleware = async (
       individual,
       transactionId,
       bankingName,
-      paymentProof,
     } = req.body;
     // Input validation using Zod
     const individualParsed = booleanSchema.safeParse(individual);
@@ -251,15 +248,6 @@ export const userRegisterMiddleware = async (
       return;
     }
 
-    const paymentProofParsed = stringSchema.safeParse(paymentProof);
-    if (!paymentProofParsed.success) {
-      res.status(400).json({
-        message: "Invalid payment proof", // Fixed message
-        error: paymentProofParsed.error.format()._errors.join(", "),
-      });
-      return;
-    }
-
     // Check if the event exists
     const eventExist = await prisma.event.findUnique({
       where: { event: eventParsed.data! },
@@ -272,9 +260,11 @@ export const userRegisterMiddleware = async (
     const registeredDetails = await prisma.registration.findMany({
       where: { userId: uid },
     });
-    
-    const filtered = registeredDetails.filter(item => item.eventId === eventExist.id);
-    if(filtered){
+
+    const filtered = registeredDetails.filter(
+      (item) => item.eventId === eventExist.id
+    );
+    if (filtered) {
       res.status(409).json({ message: "Already registered in this event " });
       return;
     }
@@ -287,8 +277,7 @@ export const userRegisterMiddleware = async (
     req.address = addressParsed.data;
     req.transactionId = transactionIdParsed.data;
     req.bankingName = bankingNameParsed.data;
-    req.paymentProof = paymentProofParsed.data;
-    req.eventId = eventExist.id
+    req.eventId = eventExist.id;
 
     // If it's a team registration, validate team-specific fields
     if (!individualParsed.data!) {

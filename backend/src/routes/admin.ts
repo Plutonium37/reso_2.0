@@ -8,6 +8,7 @@ import {
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { adminValidate } from "../middleware/validation";
+import { eventNames } from "process";
 dotenv.config();
 
 const prisma = new PrismaClient();
@@ -18,6 +19,8 @@ interface CostomRequestSignin extends Request {
   email?: string;
   adminId?: number;
   eventId?: number;
+  adminName?: string
+  eventName?: string
 }
 
 //admin sign in route
@@ -25,7 +28,7 @@ router.post(
   "/signin",
   adminSigninMiddleware,
   (req: CostomRequestSignin, res: Response) => {
-    const { email, adminId, eventId } = req;
+    const { email, adminId, eventId ,adminName, eventName} = req;
 
     try {
       const details = {
@@ -34,10 +37,16 @@ router.post(
         eventId: eventId,
         role: "ADMIN",
       };
+      const userData ={
+        email: email,
+        name: adminName,
+        event: eventName
+      }
       const token = jwt.sign(details, JWT_SECRET, { expiresIn: "7d" });
       res.status(201).json({
         message: "User signin successfully",
         authorization: "Bearer " + token,
+        userData
       });
     } catch (error) {
       res.status(500).json({ message: "Internal server error", error: error });

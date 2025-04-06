@@ -6,8 +6,18 @@ const AdminHeader = () => {
   return (
     <nav className="fixed top-0 left-0 w-full p-4 pr-7 shadow flex justify-between border-b border-red-500 z-50 bg-zinc-900">
       <div className="text-white flex items-center">
+      <RouterLink
+          to="/superadmin/admin-event"
+          className={`mr-5 transition duration-300 hover:text-red-400 ${
+            location.pathname === "/admin/event"
+              ? "text-red-400 font-bold "
+              : "text-white"
+          }`}
+        >
+          Create
+        </RouterLink>
         <RouterLink
-          to="/admin/event"
+          to="/superadmin/event"
           className={`mr-5 transition duration-300 hover:text-red-400 ${
             location.pathname === "/admin/event"
               ? "text-red-400 font-bold "
@@ -15,6 +25,16 @@ const AdminHeader = () => {
           }`}
         >
           Event
+        </RouterLink>
+        <RouterLink
+          to="/superadmin/event-user"
+          className={`mr-5 transition duration-300 hover:text-red-400 ${
+            location.pathname === "/admin/event"
+              ? "text-red-400 font-bold "
+              : "text-white"
+          }`}
+        >
+          Registered User
         </RouterLink>
         <RouterLink
           to="/admin/profile"

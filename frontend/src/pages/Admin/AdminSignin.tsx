@@ -1,6 +1,6 @@
 import { Link as RouterLink } from "react-router-dom";
-import Button from "../components/Button";
-import Input from "../components/Input";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import axios from "axios";
@@ -18,7 +18,10 @@ const AdminSignin = () => {
         adminEmail: data.email,
         adminPassword: data.password,
       });
+      localStorage.setItem("Authorization", response.data.authorization);
+      localStorage.setItem("UserData", JSON.stringify(response.data.userData));
       toast.success(response.data.message);
+      window.location.href = "/admin";
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Something went wrong");
     }

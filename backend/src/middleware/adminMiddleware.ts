@@ -13,6 +13,8 @@ interface CostomRequestSignin extends Request {
   role?: "ADMIN";
   adminId?: number;
   eventId?: number;
+  adminName?: string
+  eventName?: string
 }
 
 //admin signin middleware
@@ -35,6 +37,9 @@ export const adminSigninMiddleware = async (
 
     const admin = await prisma.admin.findUnique({
       where: { email: emailParsed.data! },
+      include:{
+        event:true
+      }
     });
     if (!admin) {
       res.status(409).json({ message: "Admin doesn't exist" });
@@ -50,8 +55,10 @@ export const adminSigninMiddleware = async (
       return;
     }
     req.email = admin.email;
+    req.adminName = admin.name
     req.adminId = admin.id;
     req.eventId = admin.eventId;
+    req.eventName = admin.event.event
     next();
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error });

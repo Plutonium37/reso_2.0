@@ -24,8 +24,10 @@ const MobileLegend: React.FC<Props> = (event) => {
     try {
       const response = await axios.post(
         "http://localhost:4000/users/register",
-        data
-      );
+        {
+          
+        }
+      )
       toast.success(response.data.message);
       window.location.href = "/";
     } catch (error: any) {
