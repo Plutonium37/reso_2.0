@@ -1,10 +1,10 @@
 import Footer from "../components/Footer.tsx";
 import { Outlet } from "react-router-dom";
-import AdminHeader from "../components/Header/AdminHeaders.tsx";
-const Admin = () => {
+import SuperAdminHeader from "../components/Header/SuperadminHeader.tsx";
+const SuperAdmin = () => {
   return (
     <div>
-      <AdminHeader />
+      <SuperAdminHeader />
       <main className="pt-16 bg-black">
         <Outlet />
       </main>
@@ -13,4 +13,4 @@ const Admin = () => {
   )
 }
 
-export default Admin
+export default SuperAdmin

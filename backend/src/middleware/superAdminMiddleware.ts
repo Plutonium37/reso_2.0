@@ -70,11 +70,11 @@ export const sAdminSigninMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const { email, password } = req.body;
+    const { superEmail, superPassword } = req.body;
 
     // Validate input using Zod
-    const emailParsed = emailSchema.safeParse(email);
-    const passwordParsed = passwordSchema.safeParse(password);
+    const emailParsed = emailSchema.safeParse(superEmail);
+    const passwordParsed = passwordSchema.safeParse(superPassword);
 
     if (!emailParsed.success || !passwordParsed.success) {
       res.status(400).json({ message: "Please enter correct input" });

@@ -13,9 +13,9 @@ const AdminSignin = () => {
 
   const signIn = async (data: any) => {
     try {
-      const response = await axios.post("http://localhost:4000/admin/signin", {
-        adminEmail: data.email,
-        adminPassword: data.password,
+      const response = await axios.post("http://localhost:4000/sadmin/signin", {
+        superEmail: data.email,
+        superPassword: data.password,
       });
       localStorage.setItem("Authorization", response.data.authorization);
       localStorage.setItem("UserData", JSON.stringify(response.data.userData));

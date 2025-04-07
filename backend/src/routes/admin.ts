@@ -166,4 +166,34 @@ router.get(
   }
 );
 
+interface CustomRequestProfile extends Request {
+  email?: string;
+}
+//get admin profile data
+router.get("/profile",adminValidate,async(req:CustomRequestProfile,res:Response)=>{
+  try{
+    const {email}=req
+    const user = await prisma.admin.findUnique({
+      where: { email },
+      include:{
+        event:true
+      }
+    });
+    if (!user) {
+      res.status(409).json({ message: "User doesn't exist" });
+      return;
+    }
+    const userData = {
+      email: email,
+      name: user.name,
+      event: user.event.event
+    };
+    res.status(201).json({
+      message: "Get Details Successfull",
+      userData,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error });
+  }
+})
 export default router;

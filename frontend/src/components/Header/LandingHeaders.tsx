@@ -82,7 +82,7 @@ const LandingHeader = () => {
       </div>
       <div className="text-white flex items-center">
         <RouterLink
-          to="/login"
+          to="/signin"
           className={`mr-5 transition duration-300 hover:text-red-400 ${
             location.pathname === "/login"
               ? "text-red-400 font-bold "

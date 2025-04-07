@@ -1,7 +1,7 @@
 import { Link as RouterLink} from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 
-const AdminHeader = () => {
+const SuperAdminHeader = () => {
   
   return (
     <nav className="fixed top-0 left-0 w-full p-4 pr-7 shadow flex justify-between border-b border-red-500 z-50 bg-zinc-900">
@@ -37,7 +37,7 @@ const AdminHeader = () => {
           Registered User
         </RouterLink>
         <RouterLink
-          to="/admin/profile"
+          to="/superadmin/profile"
           className={`transition duration-300 hover:text-red-400 ${
             location.pathname === "/profile"
               ? "text-red-400 font-bold "
@@ -51,4 +51,4 @@ const AdminHeader = () => {
   );
 };
 
-export default AdminHeader;
+export default SuperAdminHeader;

@@ -17,7 +17,10 @@ import Error from "./pages/Error";
 import Landing from "./main/Landing";
 import User from "./main/User";
 import axios from "axios";
-import { AdminProfile } from "./pages/Admin/AdminProfile";
+import AdminProfile  from "./pages/Admin/AdminProfile";
+import SadminSignin  from "./pages/Sadmin/SadminSignin";
+import SadminProfile  from "./pages/Sadmin/SadminProfile";
+import SuperAdmin from "./main/Superadmin"
 import Admin from "./main/Admin";
 interface AuthStatus {
   auth: "USER" | "ADMIN" | "SUPERADMIN";
@@ -41,7 +44,7 @@ function App() {
             Authorization: token,
           },
         });
-        setAuthStatus(response.data.auth);
+        setAuthStatus(response.data);
       } catch (error) {
         console.error("Error fetching authentication status:", error);
         setAuthStatus(null);
@@ -58,23 +61,24 @@ function App() {
       !authStatus ? (
         <Route path="/" element={<Landing />}>
           <Route index element={<Main />} />
-          <Route path="login" element={<Signin />} />
+          <Route path="signin" element={<Signin />} />
           <Route path="admin-signin" element={<AdminSignin />} />
+          <Route path="sadmin-signin" element={<SadminSignin />} />
           <Route path="signup" element={<Signup />} />
           <Route path="*" element={<Error />} />
         </Route>
       ) : authStatus.auth === "ADMIN" ? (
         <Route path="/" element={<Admin />}>
-          <Route index element={<Main />} />
-          <Route path="/admin/register" element={<Register />} />
-          <Route path="/profile" element={<AdminProfile />} />
+          <Route path="/admin/event" element={<Register />} />
+          <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="*" element={<Error />} />
         </Route>
       ) : authStatus.auth === "SUPERADMIN" ? (
-        <Route path="/" element={<User />}>
-          <Route index element={<Main />} />
-          <Route path="register" element={<Register />} />
-          <Route path="profile" element={<Profile />} />
+        <Route path="/" element={<SuperAdmin />}>
+          <Route path="/superadmin/event-user" element={<Register />} />
+          <Route path="/superadmin/admin-event" element={<Register />} />
+          <Route path="/superadmin/event" element={<Register />} />
+          <Route path="/superadmin/profile" element={<SadminProfile />} />
           <Route path="*" element={<Error />} />
         </Route>
       ) : (
