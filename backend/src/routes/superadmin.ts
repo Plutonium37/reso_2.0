@@ -96,7 +96,7 @@ interface CostomRequest extends Request {
   date?: string;
   description?: string;
   paymentQr?: string;
-  fee?: number
+  fee?: number;
 }
 // super admin create both admin and event at the same time
 router.post(
@@ -115,28 +115,30 @@ router.post(
         paymentQr,
         fee,
       } = req;
-      const { newEvent, newAdmin } = await prisma.$transaction(async (prisma) => {
-        const newEvent = await prisma.event.create({
-          data: {
-            event: event ?? "",
-            date: date ?? "",
-            description: description ?? "",
-            fee:String(fee)?? "",
-            paymentQr: paymentQr ?? "",
-          },
-        });
+      const { newEvent, newAdmin } = await prisma.$transaction(
+        async (prisma) => {
+          const newEvent = await prisma.event.create({
+            data: {
+              event: event ?? "",
+              date: date ?? "",
+              description: description ?? "",
+              fee: String(fee) ?? "",
+              paymentQr: paymentQr ?? "N/A",
+            },
+          });
 
-        const newAdmin = await prisma.admin.create({
-          data: {
-            name: name ?? "",
-            email: adminEmail ?? "",
-            password: adminPassword ?? "",
-            event: { connect: { id: newEvent.id } },
-          },
-        });
+          const newAdmin = await prisma.admin.create({
+            data: {
+              name: name ?? "",
+              email: adminEmail ?? "",
+              password: adminPassword ?? "",
+              event: { connect: { id: newEvent.id } },
+            },
+          });
 
-        return { newEvent, newAdmin };
-      });
+          return { newEvent, newAdmin };
+        }
+      );
       const details = {
         event: newEvent.event,
         admin: newAdmin.name,
@@ -154,27 +156,59 @@ interface CustomRequestProfile extends Request {
   email?: string;
 }
 //get super admin profile data
-router.get("/profile",validate,async(req:CustomRequestProfile,res:Response)=>{
-  try{
-    const {email}=req
-    const user = await prisma.sadmin.findUnique({
-      where: { email },
-    });
-    if (!user) {
-      res.status(409).json({ message: "User doesn't exist" });
-      return;
+router.get(
+  "/profile",
+  validate,
+  async (req: CustomRequestProfile, res: Response) => {
+    try {
+      const { email } = req;
+      const user = await prisma.sadmin.findUnique({
+        where: { email },
+      });
+      if (!user) {
+        res.status(409).json({ message: "User doesn't exist" });
+        return;
+      }
+      const userData = {
+        email: email,
+        name: user.name!,
+      };
+      res.status(201).json({
+        message: "Get Details Successfull",
+        userData,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error: error });
     }
-    const userData = {
-      email: email,
-      name: user.name!,
-    };
-    res.status(201).json({
-      message: "Get Details Successfull",
-      userData,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error });
   }
-})
+);
+
+router.get(
+  "/event-admin",
+  validate,
+  async (req: CustomRequestProfile, res: Response) => {
+    try {
+      const { email } = req;
+      const user = await prisma.sadmin.findUnique({
+        where: { email },
+      });
+      if (!user) {
+        res.status(409).json({ message: "Admin doesn't exist" });
+        return;
+      }
+      const allAdminsWithEvents = await prisma.admin.findMany({
+        include: {
+          event: true, // This pulls in the related Event data
+        },
+      });
+      res.status(201).json({
+        message: "Admins Events Details Successfull",
+        adminEvent: allAdminsWithEvents,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error: error });
+    }
+  }
+);
 
 export default router;

@@ -20,6 +20,8 @@ import axios from "axios";
 import AdminProfile  from "./pages/Admin/AdminProfile";
 import SadminSignin  from "./pages/Sadmin/SadminSignin";
 import SadminProfile  from "./pages/Sadmin/SadminProfile";
+import CreateAdminEvent  from "./pages/Sadmin/CreateAdminEvent";
+import SadminAdminEvent  from "./pages/Sadmin/SadminAdminEvent";
 import SuperAdmin from "./main/Superadmin"
 import Admin from "./main/Admin";
 interface AuthStatus {
@@ -75,9 +77,8 @@ function App() {
         </Route>
       ) : authStatus.auth === "SUPERADMIN" ? (
         <Route path="/" element={<SuperAdmin />}>
-          <Route path="/superadmin/event-user" element={<Register />} />
-          <Route path="/superadmin/admin-event" element={<Register />} />
-          <Route path="/superadmin/event" element={<Register />} />
+          <Route path="/superadmin/create-admin-event" element={<CreateAdminEvent />} />
+          <Route path="/superadmin/details-event-admin" element={<SadminAdminEvent />} />
           <Route path="/superadmin/profile" element={<SadminProfile />} />
           <Route path="*" element={<Error />} />
         </Route>

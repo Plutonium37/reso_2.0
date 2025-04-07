@@ -29,7 +29,7 @@ model Event {
   date          String
   fee           String
   description   String
-  paymentQr     String
+  paymentQr     String?
   registrations Registration[]
   admin         Admin? // This side does NOT need @relation()
 }

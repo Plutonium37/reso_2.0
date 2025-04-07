@@ -8,7 +8,6 @@ import { IoClose } from "react-icons/io5";
 type UserProfile = {
   email: string;
   name: string;
-  event: string;
 };
 
 const AdminProfile = () => {
