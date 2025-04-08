@@ -2,37 +2,57 @@ import Button from "../Button";
 import Input from "../Input";
 import Gender from "../Gender";
 import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import axios from "axios";
+import { useForm, SubmitHandler } from "react-hook-form";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 
 interface Props {
   event?: string;
 }
 
-const Bgmi: React.FC<Props> = (event) => {
+interface FormData {
+  teamLeader: string;
+  teamLeaderId: number;
+  gender1: string;
+  Player2: string;
+  Player2Id: number;
+  gender2: string;
+  Player3: string;
+  Player3Id: number;
+  gender3: string;
+  Player4: string;
+  Player4Id: number;
+  gender4: string;
+  Player5?: string;
+  Player5Id?: number;
+  gender5?: string;
+  address: string;
+  contact: number;
+  transactionId: string;
+  bankingName: string;
+}
+
+const Bgmi: React.FC<Props> = () => {
   const [showPayment, setShowPayment] = useState(false);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const eventRegister = async (data: any) => {
+  const eventRegister = async (data: FormData) => {
     try {
-      const response = await axios.post(
-        "http://localhost:4000/users/register",
-        data
-      );
+      const response = await axios.post("http://localhost:4000/users/register", data);
       toast.success(response.data.message);
       window.location.href = "/";
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+    } catch (error) {
+      const err = error as AxiosError<{ message: string }>;
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     if (showPayment) {
       console.log(data);
       eventRegister(data);
@@ -55,7 +75,7 @@ const Bgmi: React.FC<Props> = (event) => {
                 register={register("teamLeader", {
                   required: "Team Leader Name is required",
                 })}
-                error={errors.teamLeader?.message as string | undefined}
+                error={errors.teamLeader?.message}
               />
               <Input
                 label="Team Leader ID"
@@ -63,14 +83,15 @@ const Bgmi: React.FC<Props> = (event) => {
                 type="number"
                 register={register("teamLeaderId", {
                   required: "Team Leader ID is required",
+                  valueAsNumber: true,
                 })}
-                error={errors.teamLeaderId?.message as string | undefined}
+                error={errors.teamLeaderId?.message}
               />
               <Gender
                 register={register("gender1", {
                   required: "Gender is required",
                 })}
-                error={errors.gender1?.message as string}
+                error={errors.gender1?.message}
               />
               <Input
                 label="Player 2 Name"
@@ -79,7 +100,7 @@ const Bgmi: React.FC<Props> = (event) => {
                 register={register("Player2", {
                   required: "Player 2 Name is required",
                 })}
-                error={errors.Player2?.message as string | undefined}
+                error={errors.Player2?.message}
               />
               <Input
                 label="Player 2 ID"
@@ -87,14 +108,15 @@ const Bgmi: React.FC<Props> = (event) => {
                 type="number"
                 register={register("Player2Id", {
                   required: "Player 2 ID is required",
+                  valueAsNumber: true,
                 })}
-                error={errors.Player2Id?.message as string | undefined}
+                error={errors.Player2Id?.message}
               />
               <Gender
                 register={register("gender2", {
                   required: "Gender is required",
                 })}
-                error={errors.gender2?.message as string}
+                error={errors.gender2?.message}
               />
               <Input
                 label="Player 3 Name"
@@ -103,7 +125,7 @@ const Bgmi: React.FC<Props> = (event) => {
                 register={register("Player3", {
                   required: "Player 3 Name is required",
                 })}
-                error={errors.Player3?.message as string | undefined}
+                error={errors.Player3?.message}
               />
               <Input
                 label="Player 3 ID"
@@ -111,14 +133,15 @@ const Bgmi: React.FC<Props> = (event) => {
                 type="number"
                 register={register("Player3Id", {
                   required: "Player 3 ID is required",
+                  valueAsNumber: true,
                 })}
-                error={errors.Player3Id?.message as string | undefined}
+                error={errors.Player3Id?.message}
               />
               <Gender
                 register={register("gender3", {
                   required: "Gender is required",
                 })}
-                error={errors.gender3?.message as string}
+                error={errors.gender3?.message}
               />
               <Input
                 label="Player 4 Name"
@@ -127,7 +150,7 @@ const Bgmi: React.FC<Props> = (event) => {
                 register={register("Player4", {
                   required: "Player 4 Name is required",
                 })}
-                error={errors.Player4?.message as string | undefined}
+                error={errors.Player4?.message}
               />
               <Input
                 label="Player 4 ID"
@@ -135,14 +158,15 @@ const Bgmi: React.FC<Props> = (event) => {
                 type="number"
                 register={register("Player4Id", {
                   required: "Player 4 ID is required",
+                  valueAsNumber: true,
                 })}
-                error={errors.Player4Id?.message as string | undefined}
+                error={errors.Player4Id?.message}
               />
               <Gender
                 register={register("gender4", {
                   required: "Gender is required",
                 })}
-                error={errors.gender4?.message as string}
+                error={errors.gender4?.message}
               />
               <Input
                 label="Substitute Name (Optional)"
@@ -154,11 +178,11 @@ const Bgmi: React.FC<Props> = (event) => {
                 label="Substitute ID (Optional)"
                 id="Player5Id"
                 type="number"
-                register={register("Player5Id")}
+                register={register("Player5Id", { valueAsNumber: true })}
               />
               <Gender
                 register={register("gender5")}
-                error={errors.gender5?.message as string}
+                error={errors.gender5?.message}
               />
             </div>
             <div id="teamleader" className="mt-5">
@@ -172,7 +196,7 @@ const Bgmi: React.FC<Props> = (event) => {
                 register={register("address", {
                   required: "Address is required",
                 })}
-                error={errors.address?.message as string | undefined}
+                error={errors.address?.message}
               />
               <Input
                 label="Contact no."
@@ -180,8 +204,9 @@ const Bgmi: React.FC<Props> = (event) => {
                 type="number"
                 register={register("contact", {
                   required: "Contact number is required",
+                  valueAsNumber: true,
                 })}
-                error={errors.contact?.message as string | undefined}
+                error={errors.contact?.message}
               />
             </div>
             <div className="flex items-center justify-center">
@@ -194,10 +219,8 @@ const Bgmi: React.FC<Props> = (event) => {
               Payment Section
             </h2>
 
-            {/* QR Code Image */}
             <img src="/s.jpg" alt="Payment QR" className="w-48 mx-auto mb-4" />
 
-            {/* Transaction ID */}
             <Input
               label="Transaction ID"
               id="transactionId"
@@ -205,7 +228,7 @@ const Bgmi: React.FC<Props> = (event) => {
               register={register("transactionId", {
                 required: "Transaction ID is required",
               })}
-              error={errors.transactionId?.message as string}
+              error={errors.transactionId?.message}
             />
             <Input
               label="Banking Name"
@@ -214,7 +237,7 @@ const Bgmi: React.FC<Props> = (event) => {
               register={register("bankingName", {
                 required: "Banking Name is required",
               })}
-              error={errors.bankingName?.message as string}
+              error={errors.bankingName?.message}
             />
             <div className="flex justify-between mt-4">
               <Button

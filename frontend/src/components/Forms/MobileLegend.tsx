@@ -2,46 +2,156 @@ import Button from "../Button";
 import Input from "../Input";
 import Gender from "../Gender";
 import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import axios, { AxiosError } from "axios";
+import { useState, useEffect } from "react";
 
 interface Props {
   event?: string;
 }
 
-const MobileLegend: React.FC<Props> = (event) => {
+interface FormData {
+  teamLeader: string;
+  teamLeaderId: number;
+  gender1: string;
+  Player2: string;
+  Player2Id: number;
+  gender2: string;
+  Player3: string;
+  Player3Id: number;
+  gender3: string;
+  Player4: string;
+  Player4Id: number;
+  gender4: string;
+  Player5: string;
+  Player5Id: number;
+  gender5: string;
+  Player6?: string;
+  Player6Id?: number;
+  gender6?: string;
+  address: string;
+  contact: number;
+  transactionId?: string;
+  bankingName?: string;
+}
+
+interface CheckResponse {
+  fee: number;
+  eventRegistered: boolean;
+}
+
+const MobileLegend: React.FC<Props> = ({ event }) => {
   const [showPayment, setShowPayment] = useState(false);
+  const [alreadyRegistered, setAlreadyRegistered] = useState(false);
+  const [fee, setFee] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
-  const eventRegister = async (data: any) => {
+  useEffect(() => {
+    const checkRegistration = async () => {
+      const token = localStorage.getItem("Authorization");
+      if (!token) {
+        toast.error("No authorization token found");
+        window.location.href = "/";
+        return;
+      }
+
+      try {
+        const response = await axios.get<CheckResponse>(
+          `http://localhost:4000/users/check?event=${event?.toLowerCase()}`,
+          {
+            headers: {
+              Authorization: token,
+            },
+          }
+        );
+        setFee(response.data.fee);
+        setAlreadyRegistered(response.data.eventRegistered);
+      } catch (error) {
+        const axiosError = error as AxiosError<{ message?: string }>;
+        if (axiosError.response?.status === 409) {
+          const msg = axiosError.response?.data?.message;
+          if (msg === "Already Registered in this Event") {
+            setAlreadyRegistered(true);
+          } else {
+            toast.error(msg || "Something went wrong");
+          }
+        } else {
+          toast.error(
+            axiosError.response?.data?.message || "Something went wrong"
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (event) {
+      checkRegistration();
+    }
+  }, [event]);
+
+  const eventRegister = async (data: FormData) => {
+    const token = localStorage.getItem("Authorization");
+    if (!token) {
+      toast.error("No authorization token found");
+      window.location.href = "/";
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:4000/users/register",
         {
-          
+          event,
+          ...data,
+          individual: false,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
         }
-      )
+      );
       toast.success(response.data.message);
       window.location.href = "/";
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message?: string }>;
+      toast.error(axiosError.response?.data?.message || "Something went wrong");
     }
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit: SubmitHandler<FormData> = (data) => {
     if (showPayment) {
-      console.log(data);
       eventRegister(data);
     } else {
       setShowPayment(true);
     }
   };
+
+  if (loading)
+    return (
+      <p className="text-white text-center">Checking registration status...</p>
+    );
+
+  if (alreadyRegistered) {
+    return (
+      <div className="bg-zinc-800 p-6 rounded-lg shadow-lg text-white text-center ">
+        <h2 className="text-xl font-bold text-red-500 mb-4">
+          🔒 Already Registered
+        </h2>
+        <p>
+          You have already registered for{" "}
+          <span className="text-yellow-400">{event?.toUpperCase()}</span>.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -219,11 +329,8 @@ const MobileLegend: React.FC<Props> = (event) => {
             <h2 className="text-white text-xl font-bold mb-4">
               Payment Section
             </h2>
-
-            {/* QR Code Image */}
             <img src="/s.jpg" alt="Payment QR" className="w-48 mx-auto mb-4" />
-
-            {/* Transaction ID */}
+            <h3 className="text-white text-md">Registration Fee: ₹{fee}</h3>
             <Input
               label="Transaction ID"
               id="transactionId"

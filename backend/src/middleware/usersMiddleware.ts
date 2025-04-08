@@ -260,11 +260,10 @@ export const userRegisterMiddleware = async (
     const registeredDetails = await prisma.registration.findMany({
       where: { userId: uid },
     });
-
     const filtered = registeredDetails.filter(
       (item) => item.eventId === eventExist.id
     );
-    if (filtered) {
+    if (filtered.length > 0) {
       res.status(409).json({ message: "Already registered in this event " });
       return;
     }

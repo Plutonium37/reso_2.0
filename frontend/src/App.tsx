@@ -71,12 +71,14 @@ function App() {
         </Route>
       ) : authStatus.auth === "ADMIN" ? (
         <Route path="/" element={<Admin />}>
+          <Route index element={<Main />} />
           <Route path="/admin/event" element={<Register />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="*" element={<Error />} />
         </Route>
       ) : authStatus.auth === "SUPERADMIN" ? (
         <Route path="/" element={<SuperAdmin />}>
+          <Route index element={<Main />} />
           <Route path="/superadmin/create-admin-event" element={<CreateAdminEvent />} />
           <Route path="/superadmin/details-event-admin" element={<SadminAdminEvent />} />
           <Route path="/superadmin/profile" element={<SadminProfile />} />
