@@ -3,9 +3,15 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useState } from "react";
+
+// Define the type for form input
+type FormData = {
+  email: string;
+  password: string;
+};
 
 const Signin = () => {
   const {
@@ -13,13 +19,12 @@ const Signin = () => {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm<FormData>();
 
   const [showPassword, setShowPassword] = useState(false);
   const password = watch("password");
 
-
-  const signIn = async (data: any) => {
+  const signIn = async (data: FormData) => {
     try {
       const response = await axios.post("http://localhost:4000/users/signin", {
         email: data.email,
@@ -29,11 +34,13 @@ const Signin = () => {
       localStorage.setItem("UserData", JSON.stringify(response.data.userData));
       toast.success(response.data.message);
       window.location.href = "/";
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Something went wrong");
+    } catch (error) {
+      const err = error as AxiosError<{ message?: string }>;
+      toast.error(err.response?.data?.message || "Something went wrong");
     }
   };
-  const onSubmit = (data: any) => {
+
+  const onSubmit = (data: FormData) => {
     signIn(data);
   };
 
@@ -58,7 +65,7 @@ const Signin = () => {
                     message: "Invalid email",
                   },
                 })}
-                error={errors.email?.message as string | undefined}
+                error={errors.email?.message}
               />
               <div className="relative">
                 <Input
@@ -70,10 +77,9 @@ const Signin = () => {
                     minLength: { value: 6, message: "At least 6 characters" },
                     maxLength: { value: 30, message: "At most 30 characters" },
                   })}
-                  error={errors.password?.message as string | undefined}
+                  error={errors.password?.message}
                 />
-
-{password && (
+                {password && (
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -88,11 +94,11 @@ const Signin = () => {
                 )}
               </div>
             </div>
-            <Button label={"Sign In"} type={"submit"} />
+            <Button label="Sign In" type="submit" />
           </div>
         </form>
-        <div className="flex ">
-          <h3 className=" mr-1 text-white">Didn't have an acount?</h3>
+        <div className="flex">
+          <h3 className="mr-1 text-white">Didn't have an account?</h3>
           <RouterLink to="/signup" className="text-red-500 hover:font-semibold">
             Sign Up
           </RouterLink>

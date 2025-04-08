@@ -112,7 +112,7 @@ const AdminProfile = () => {
                     </div>
                     <div className="flex flex-col md:flex-row md:justify-between">
                       <h2 className="text-lg font-semibold">Admin assigned event</h2>
-                      <p className="text-gray-400">{(profile?.event).toUpperCase() || "N/A"}</p>
+                      <p className="text-gray-400">{profile?.event ? profile.event.toUpperCase() : "N/A"}</p>
                     </div>
                   </div>
                 </div>

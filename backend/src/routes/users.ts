@@ -115,7 +115,6 @@ interface CostomRequest extends Request {
   players?: Player[];
   bankingName?: string;
   transactionId?: string;
-  paymentProof?: string;
 }
 
 //user event registration
@@ -126,7 +125,6 @@ router.post(
   async (req: CostomRequest, res: Response) => {
     try {
       const {
-        email,
         userId,
         eventId,
         gender,
@@ -136,7 +134,6 @@ router.post(
         individual,
         bankingName,
         transactionId,
-        paymentProof,
       } = req;
 
       // If individual registration
@@ -150,7 +147,6 @@ router.post(
             individual: true,
             bankingName: bankingName!,
             transactionId: transactionId!,
-            paymentUrl: paymentProof!,
             userId: userId!,
             eventId: eventId!,
           },
@@ -179,7 +175,6 @@ router.post(
             individual: false,
             bankingName: bankingName!,
             transactionId: transactionId!,
-            paymentUrl: paymentProof!,
             userId: userId!,
             eventId: eventId!,
           },
@@ -219,15 +214,15 @@ router.get(
       const registeredDetails = await prisma.registration.findMany({
         where: { userId: uid },
         select: {
+          id: true,
           createdAt: true,
           name: true,
           gender: true,
           contact: true,
           address: true,
-          individual:true,
+          individual: true,
           transactionId: true,
           bankingName: true,
-          paymentUrl: true,
           approved: true,
           event: {
             select: {
@@ -237,17 +232,17 @@ router.get(
               fee: true,
             },
           },
-          user:{
-            select:{
-              email:true
-            }
+          user: {
+            select: {
+              email: true,
+            },
           },
-          team:{
-            select:{
-              teamName:true,
-              players:true
-            }
-          }
+          team: {
+            select: {
+              teamName: true,
+              players: true,
+            },
+          },
         },
       });
 
@@ -256,7 +251,7 @@ router.get(
         .json({ message: "Get details  successfully", registeredDetails });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Internal Server Error", error });
+      res.status(500).json({ message: "Can't get the details", error });
       return;
     }
   }
@@ -272,10 +267,10 @@ router.get(
   userValidate,
   async (req: CustomRequestCheck, res: Response) => {
     const { uid } = req;
-    const event = req.body;
+    const event = req.query.event as string;
+
     try {
-      //event parsed or validation
-      const eventParsed = stringSchema.safeParse(event);
+      const eventParsed = stringSchema.safeParse(event?.toLowerCase());
       if (!eventParsed.success) {
         res.status(400).json({
           message: "Invalid event",
@@ -283,39 +278,40 @@ router.get(
         });
         return;
       }
-      // getting event details
+
       const eventExist = await prisma.event.findUnique({
-        where: { event: event },
+        where: { event: eventParsed.data },
       });
-      // checking event exist or not
+
       if (!eventExist) {
         res.status(409).json({ message: "Event doesn't exist" });
         return;
       }
-      // getting data for the event registered by the user
+
       const registeredDetails = await prisma.registration.findMany({
-        where: { userId: uid }
+        where: { userId: uid },
       });
-      // filtering out if user already registered or not
-      const filtered = registeredDetails.filter(
+
+      const alreadyRegistered = registeredDetails.some(
         (item) => item.eventId === eventExist.id
       );
-      if (filtered) {
+
+      if (alreadyRegistered) {
         res.status(409).json({
-          message: "Already registered in this event ",
+          message: "Already Registered in this Event",
           eventRegistered: true,
         });
         return;
       }
-      res
-        .status(200)
-        .json({
-          message: "Not Registered Yet",
-          fee: eventExist.fee,
-          eventRegistered: false,
-        });
+
+      res.status(200).json({
+        message: "Not Registered Yet",
+        fee: eventExist.fee,
+        eventRegistered: false,
+      });
       return;
     } catch (error) {
+      console.error("CHECK ERROR:", error);
       res.status(500).json({ message: "Internal Server Error", error });
       return;
     }
@@ -327,27 +323,49 @@ interface CustomRequestProfile extends Request {
 }
 
 //get user profile data
-router.get("/profile",userValidate,async(req:CustomRequestProfile,res:Response)=>{
-  try{
-    const {email}=req
-    const user = await prisma.user.findUnique({
-      where: { email },
+router.get(
+  "/profile",
+  userValidate,
+  async (req: CustomRequestProfile, res: Response) => {
+    try {
+      const { email } = req;
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (!user) {
+        res.status(409).json({ message: "User doesn't exist" });
+        return;
+      }
+      const userData = {
+        email: email,
+        name: user.name!,
+      };
+      res.status(201).json({
+        message: "Get Details Successfull",
+        userData,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error: error });
+    }
+  }
+);
+
+router.get("/status", async (req, res) => {
+  try {
+    const setting = await prisma.globalSetting.findUnique({
+      where: { id: 1 },
     });
-    if (!user) {
-      res.status(409).json({ message: "User doesn't exist" });
+
+    if (!setting) {
+      res.status(404).json({ message: "Global setting not found" });
       return;
     }
-    const userData = {
-      email: email,
-      name: user.name!,
-    };
-    res.status(201).json({
-      message: "Get Details Successfull",
-      userData,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error });
-  }
-})
 
+    res.json({ registrationOpen: setting.registrationOpen });
+    return;
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch registration status" });
+    return;
+  }
+});
 export default router;

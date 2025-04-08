@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Request, Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { validate } from "../middleware/validation";
@@ -155,7 +155,7 @@ router.post(
 interface CustomRequestProfile extends Request {
   email?: string;
 }
-//get super admin profile data
+//this gets super admin profile data
 router.get(
   "/profile",
   validate,
@@ -183,6 +183,7 @@ router.get(
   }
 );
 
+//this gets the data of the event and admin that's created by Super Admin
 router.get(
   "/event-admin",
   validate,
@@ -193,7 +194,7 @@ router.get(
         where: { email },
       });
       if (!user) {
-        res.status(409).json({ message: "Admin doesn't exist" });
+        res.status(409).json({ message: "Super Admin doesn't exist" });
         return;
       }
       const allAdminsWithEvents = await prisma.admin.findMany({
@@ -207,6 +208,131 @@ router.get(
       });
     } catch (error) {
       res.status(500).json({ message: "Internal server error", error: error });
+    }
+  }
+);
+
+//this gets the data of all the users registered data or forms
+router.get(
+  "/user-registered",
+  validate,
+  async (req: CustomRequestProfile, res: Response) => {
+    try {
+      const { email } = req;
+      const user = await prisma.sadmin.findUnique({
+        where: { email },
+      });
+      if (!user) {
+        res.status(409).json({ message: "Super Admin doesn't exist" });
+        return;
+      }
+      const allUserRegistedDetails = await prisma.registration.findMany({
+        select: {
+          id: true,
+          createdAt: true,
+          name: true,
+          gender: true,
+          contact: true,
+          address: true,
+          individual: true,
+          transactionId: true,
+          bankingName: true,
+          approved: true,
+          event: {
+            select: {
+              event: true,
+              date: true,
+              description: true,
+              fee: true,
+            },
+          },
+          user: {
+            select: {
+              email: true,
+            },
+          },
+          team: {
+            select: {
+              teamName: true,
+              players: true,
+            },
+          },
+        },
+      });
+      res.status(201).json({
+        message: "Gets all the Users Registered Details Successfully",
+        eventRegistrationDetails: allUserRegistedDetails,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error: error });
+    }
+  }
+);
+
+//update approve of the payment
+router.put("/approve/:registrationId", validate, async (req, res) => {
+  const registrationId = Number(req.params.registrationId);
+  const { approved } = req.body;
+
+  try {
+    const updatedRegistration = await prisma.registration.update({
+      where: { id: registrationId },
+      data: { approved },
+    });
+
+    res.json({ message: "Updated successfully", data: updatedRegistration });
+  } catch (error) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
+// GET route: Fetch current registration status
+router.get(
+  "/registration-open",
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      const updatedSetting = await prisma.globalSetting.findUnique({
+        where: { id: 1 },
+      });
+
+      if (!updatedSetting) {
+        res.status(404).json({ error: "Global setting not found" });
+        return;
+      }
+
+      res.json({ registrationOpen: updatedSetting.registrationOpen });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch registration status" });
+    }
+  }
+);
+
+// PUT route: Update registration status
+router.put(
+  "/registration-open",
+  validate,
+  async (req: Request, res: Response) => {
+    const { registrationOpen } = req.body;
+
+    if (typeof registrationOpen !== "boolean") {
+      res.status(400).json({ error: "registrationOpen must be a boolean" });
+      return;
+    }
+
+    try {
+      const updatedSetting = await prisma.globalSetting.update({
+        where: { id: 1 },
+        data: { registrationOpen },
+      });
+
+      res.json({
+        message: "Registration status updated successfully",
+        registrationOpen: updatedSetting.registrationOpen,
+      });
+    } catch (error) {
+      console.error("Error updating registration status:", error);
+      res.status(500).json({ error: "Failed to update registration status" });
     }
   }
 );

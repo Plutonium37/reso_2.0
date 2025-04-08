@@ -115,7 +115,6 @@ export const adminValidate = (
 
 // Input Validation
 import z from "zod";
-import { Express} from "express";
 export const emailSchema = z
   .string()
   .email({ message: "Invalid email address format" });
@@ -154,14 +153,3 @@ export const numberSchema = z.preprocess(
   (val) => Number(val),
   z.number({ invalid_type_error: "Must be a number" })
 );
-
-// export const fileUploadSchema = z.object({
-//   paymentScreenshot: z
-//     .instanceof(Express.Multer.File)
-//     .refine((file) => ["image/jpeg", "image/png"].includes(file.mimetype), {
-//       message: "Only JPG or PNG formats are allowed",
-//     })
-//     .refine((file) => file.size <= 2 * 1024 * 1024, {
-//       message: "File size must be under 2MB",
-//     }),
-// });

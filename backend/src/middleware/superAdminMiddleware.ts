@@ -183,7 +183,7 @@ export const createEventWithAdmin = async (
       return;
     }
 
-    const eventParsed = stringSchema.safeParse(event);
+    const eventParsed = stringSchema.safeParse(event.toLowerCase());
     if (!eventParsed.success) {
       res.status(400).json({
         message: "Invalid event name",
@@ -209,15 +209,6 @@ export const createEventWithAdmin = async (
       });
       return;
     }
-
-    // const paymentQrParsed = stringSchema.safeParse(paymentQr);
-    // if (!paymentQrParsed.success) {
-    //   res.status(400).json({
-    //     message: "Invalid QR code",
-    //     error: paymentQrParsed.error.format()._errors.join(", "),
-    //   });
-    //   return;
-    // }
 
     //Checking if event already exists
     const eventExist = await prisma.event.findUnique({

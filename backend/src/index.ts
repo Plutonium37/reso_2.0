@@ -6,6 +6,22 @@ import superadmin from "./routes/superadmin";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+const initializeGlobalSetting = async () => {
+  await prisma.globalSetting.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {
+      id: 1,
+      registrationOpen: true,
+    },
+  });
+};
+
+initializeGlobalSetting();
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;

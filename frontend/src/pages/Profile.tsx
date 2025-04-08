@@ -120,7 +120,7 @@ const Profile = () => {
 
         {/* Main Content */}
         <div className="flex-1 p-4 md:p-6 overflow-y-auto">
-          <div className="h-full bg-zinc-900 rounded-md shadow-md shadow-red-500/50 p-6 flex flex-col justify-start">
+          <div className="h-hvm bg-zinc-900 rounded-md shadow-md shadow-red-500/50 p-6 flex flex-col justify-start">
             {profile ? (
               showEventsRegister ? (
                 <EventRegistered />

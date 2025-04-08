@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import Bgmi from "../components/Forms/Bgmi";
 import MobileLegend from "../components/Forms/MobileLegend";
-import { Quantum } from "ldrs/react";
+import { Quantum } from "ldrs/react"; 
 import CommonForm from "../components/Forms/CommonForm";
-
+import axios from "axios";
 type OptionType = {
   value: string;
   label: string;
@@ -42,48 +42,51 @@ const customStyles = {
 
 const options: OptionType[] = [
   {
-    value: "structural_modelling",
+    value: "structuralModelling",
     label: "Structural Modelling (Technical Event)",
   },
-  { value: "autocad_design", label: "Autocad Design (Technical Event)" },
-  { value: "code_debugging", label: "Code Debugging (Technical Event)" },
-  { value: "code_jumbling", label: "Code Jumbling (Technical Event)" },
-  { value: "project_showcase", label: "Project Showcase (Technical Event)" },
-  { value: "circuit_design", label: "Circuit Design (Technical Event)" },
-  { value: "paper_windmill", label: "Paper Windmill (Technical Event)" },
+  { value: "autocadDesign", label: "Autocad Design (Technical Event)" },
+  { value: "codeDebugging", label: "Code Debugging (Technical Event)" },
+  { value: "codeJumbling", label: "Code Jumbling (Technical Event)" },
+  { value: "projectShowcase", label: "Project Showcase (Technical Event)" },
+  { value: "circuitDesign", label: "Circuit Design (Technical Event)" },
+  { value: "paperWindmill", label: "Paper Windmill (Technical Event)" },
   {
-    value: "machine_design_autocad",
+    value: "machineDesignAutocad",
     label: "Machine Design Autocad (Technical Event)",
   },
   {
-    value: "electrical_component",
+    value: "electricalComponent",
     label: "Electrical Component Identification & Modelling (Technical Event)",
   },
   { value: "painting", label: "Painting (Spot Event)" },
   { value: "photography", label: "Photography (Spot Event)" },
-  { value: "treasure_hunt", label: "Treasure Hunt (Spot Event)" },
-  { value: "rubik_cube", label: "Rubik's Cube (Spot Event)" },
+  { value: "treasureHunt", label: "Treasure Hunt (Spot Event)" },
+  { value: "rubikCube", label: "Rubik's Cube (Spot Event)" },
   { value: "quiz", label: "Quiz (Literary Event)" },
   { value: "debate", label: "Debate (Literary Event)" },
   { value: "tekken", label: "Tekken 7 (Gaming)" },
   { value: "bgmi", label: "Bgmi (Gaming)" },
-  { value: "mobile_legend", label: "Mobile Legend (Gaming)" },
-  { value: "fc24", label: "FC24 (Gaming)" },
-  { value: "light_vocal", label: "Light Vocal Solo (Voice of RESO)" },
-  { value: "western_solo", label: "Western Solo Unplugged (Voice of RESO)" },
-  { value: "classical&folk", label: "Classical & Folk (Dance Contest)" },
-  { value: "modern", label: "Modern (Dance Contest)" },
+  { value: "mobileLegend", label: "Mobile Legend (Gaming)" },
+  { value: "fifa", label: "FC24 (Gaming)" },
+  { value: "lightVocal", label: "Light Vocal Solo (Voice of RESO)" },
+  { value: "westernSolo", label: "Western Solo Unplugged (Voice of RESO)" },
+  { value: "classicalFolk", label: "Classical & Folk (Dance Contest)" },
+  { value: "dance", label: "Modern (Dance Contest)" },
   { value: "cosplay", label: "Cosplay Contest" },
   { value: "reel", label: "Reel Contest" },
 ];
 
 const Register = () => {
   const [selectedOption, setSelectedOption] = useState<OptionType | null>(null);
-
+  const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(
+    null
+  );
+  
   // Mapping special components
   const specialComponents: Record<string, React.ElementType> = {
     bgmi: Bgmi,
-    mobile_legend: MobileLegend,
+    mobileLegend: MobileLegend,
   };
 
   // Determine the component to use
@@ -92,10 +95,42 @@ const Register = () => {
       ? specialComponents[selectedOption.value]
       : CommonForm;
 
+  // Fetch the registration status
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/users/status");
+        setRegistrationOpen(response.data.registrationOpen);
+      } catch (err) {
+        console.error("Error fetching registration status", err);
+        setRegistrationOpen(true); 
+      }
+    };
+
+    fetchStatus();
+  }, []);
+
+  if (registrationOpen === null) {
+    return (
+      <div className="h-dvh flex justify-center items-center bg-black">
+        <Quantum size="150" speed="4" color="blue" />
+      </div>
+    );
+  }
+
+  if (!registrationOpen) {
+    return (
+      <div className="h-dvh flex flex-col justify-center items-center bg-black text-white">
+        <h1 className="text-4xl font-bold mb-4">🚫 Registration Closed</h1>
+        <p className="text-lg text-gray-400">Please check back later!</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-black flex items-center justify-center ">
       <div className="pt-2 w-3/5 ">
-        <h1 className="text-3xl text-white mb-3">Event to participate -</h1>
+        <h1 className="text-3xl text-white font-bold mb-3">Event to participate -</h1>
         <Select
           value={selectedOption}
           onChange={setSelectedOption}
