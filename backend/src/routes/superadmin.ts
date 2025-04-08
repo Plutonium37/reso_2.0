@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { Request, Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { validate } from "../middleware/validation";
@@ -228,7 +228,7 @@ router.get(
       }
       const allUserRegistedDetails = await prisma.registration.findMany({
         select: {
-          id:true,
+          id: true,
           createdAt: true,
           name: true,
           gender: true,
@@ -285,4 +285,56 @@ router.put("/approve/:registrationId", validate, async (req, res) => {
     res.status(500).json({ error: "Update failed" });
   }
 });
+
+// GET route: Fetch current registration status
+router.get(
+  "/registration-open",
+  validate,
+  async (req: Request, res: Response) => {
+    try {
+      const updatedSetting = await prisma.globalSetting.findUnique({
+        where: { id: 1 },
+      });
+
+      if (!updatedSetting) {
+        res.status(404).json({ error: "Global setting not found" });
+        return;
+      }
+
+      res.json({ registrationOpen: updatedSetting.registrationOpen });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch registration status" });
+    }
+  }
+);
+
+// PUT route: Update registration status
+router.put(
+  "/registration-open",
+  validate,
+  async (req: Request, res: Response) => {
+    const { registrationOpen } = req.body;
+
+    if (typeof registrationOpen !== "boolean") {
+      res.status(400).json({ error: "registrationOpen must be a boolean" });
+      return;
+    }
+
+    try {
+      const updatedSetting = await prisma.globalSetting.update({
+        where: { id: 1 },
+        data: { registrationOpen },
+      });
+
+      res.json({
+        message: "Registration status updated successfully",
+        registrationOpen: updatedSetting.registrationOpen,
+      });
+    } catch (error) {
+      console.error("Error updating registration status:", error);
+      res.status(500).json({ error: "Failed to update registration status" });
+    }
+  }
+);
+
 export default router;
