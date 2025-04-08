@@ -27,7 +27,7 @@ function ImageCarousel() {
   }, []);
 
   return (
-    <div className="h-screen bg-transparent flex flex-col items-center justify-center relative px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-black text-white px-6 py-16 flex flex-col items-center justify-center">
       <h1
         className="font-extrabold text-5xl md:text-6xl text-white tracking-widest mb-6 text-center"
         style={{
