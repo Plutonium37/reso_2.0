@@ -8,7 +8,6 @@ import {
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { adminValidate } from "../middleware/validation";
-import { eventNames } from "process";
 dotenv.config();
 
 const prisma = new PrismaClient();
@@ -19,8 +18,8 @@ interface CostomRequestSignin extends Request {
   email?: string;
   adminId?: number;
   eventId?: number;
-  adminName?: string
-  eventName?: string
+  adminName?: string;
+  eventName?: string;
 }
 
 //admin sign in route
@@ -28,7 +27,7 @@ router.post(
   "/signin",
   adminSigninMiddleware,
   (req: CostomRequestSignin, res: Response) => {
-    const { email, adminId, eventId ,adminName, eventName} = req;
+    const { email, adminId, eventId, adminName, eventName } = req;
 
     try {
       const details = {
@@ -37,16 +36,16 @@ router.post(
         eventId: eventId,
         role: "ADMIN",
       };
-      const userData ={
+      const userData = {
         email: email,
         name: adminName,
-        event: eventName
-      }
+        event: eventName,
+      };
       const token = jwt.sign(details, JWT_SECRET, { expiresIn: "7d" });
       res.status(201).json({
         message: "User signin successfully",
         authorization: "Bearer " + token,
-        userData
+        userData,
       });
     } catch (error) {
       res.status(500).json({ message: "Internal server error", error: error });
@@ -114,15 +113,17 @@ router.get(
 interface CustomRequestGetEventUser extends Request {
   eventId?: number;
 }
+//get user register details for a specific event
 router.get(
-  "/user-details",
+  "/register-details",
   adminValidate,
   async (req: CustomRequestGetEventUser, res: Response) => {
     const { eventId } = req;
     try {
-      const eventDetails = await prisma.registration.findMany({
+      const registerDetails = await prisma.registration.findMany({
         where: { eventId: eventId! },
         select: {
+          id: true,
           createdAt: true,
           name: true,
           gender: true,
@@ -131,7 +132,6 @@ router.get(
           individual: true,
           transactionId: true,
           bankingName: true,
-          paymentUrl: true,
           approved: true,
           event: {
             select: {
@@ -157,7 +157,7 @@ router.get(
 
       res
         .status(200)
-        .json({ message: "Get details  successfully", eventDetails });
+        .json({ message: "Get details  successfully", registerDetails });
       return;
     } catch (error) {
       res.status(500).json({ message: "Internal Server Error", error });
@@ -170,30 +170,53 @@ interface CustomRequestProfile extends Request {
   email?: string;
 }
 //get admin profile data
-router.get("/profile",adminValidate,async(req:CustomRequestProfile,res:Response)=>{
-  try{
-    const {email}=req
-    const user = await prisma.admin.findUnique({
-      where: { email },
-      include:{
-        event:true
+router.get(
+  "/profile",
+  adminValidate,
+  async (req: CustomRequestProfile, res: Response) => {
+    try {
+      const { email } = req;
+      const user = await prisma.admin.findUnique({
+        where: { email },
+        include: {
+          event: true,
+        },
+      });
+      if (!user) {
+        res.status(409).json({ message: "User doesn't exist" });
+        return;
       }
-    });
-    if (!user) {
-      res.status(409).json({ message: "User doesn't exist" });
-      return;
+      const userData = {
+        email: email,
+        name: user.name,
+        event: user.event.event,
+      };
+      res.status(201).json({
+        message: "Get Details Successfull",
+        userData,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error: error });
     }
-    const userData = {
-      email: email,
-      name: user.name,
-      event: user.event.event
-    };
-    res.status(201).json({
-      message: "Get Details Successfull",
-      userData,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error });
   }
-})
+);
+
+
+//update approve of the payment
+router.put("/approve/:registrationId", adminValidate, async (req, res) => {
+  const registrationId = Number(req.params.registrationId);
+  const { approved } = req.body;
+
+  try {
+    const updatedRegistration = await prisma.registration.update({
+      where: { id: registrationId },
+      data: { approved },
+    });
+
+    res.json({ message: "Updated successfully", data: updatedRegistration });
+  } catch (error) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+
 export default router;

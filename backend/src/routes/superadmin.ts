@@ -155,7 +155,7 @@ router.post(
 interface CustomRequestProfile extends Request {
   email?: string;
 }
-//get super admin profile data
+//this gets super admin profile data
 router.get(
   "/profile",
   validate,
@@ -183,6 +183,7 @@ router.get(
   }
 );
 
+//this gets the data of the event and admin that's created by Super Admin
 router.get(
   "/event-admin",
   validate,
@@ -193,7 +194,7 @@ router.get(
         where: { email },
       });
       if (!user) {
-        res.status(409).json({ message: "Admin doesn't exist" });
+        res.status(409).json({ message: "Super Admin doesn't exist" });
         return;
       }
       const allAdminsWithEvents = await prisma.admin.findMany({
@@ -211,4 +212,77 @@ router.get(
   }
 );
 
+//this gets the data of all the users registered data or forms
+router.get(
+  "/user-registered",
+  validate,
+  async (req: CustomRequestProfile, res: Response) => {
+    try {
+      const { email } = req;
+      const user = await prisma.sadmin.findUnique({
+        where: { email },
+      });
+      if (!user) {
+        res.status(409).json({ message: "Super Admin doesn't exist" });
+        return;
+      }
+      const allUserRegistedDetails = await prisma.registration.findMany({
+        select: {
+          id:true,
+          createdAt: true,
+          name: true,
+          gender: true,
+          contact: true,
+          address: true,
+          individual: true,
+          transactionId: true,
+          bankingName: true,
+          approved: true,
+          event: {
+            select: {
+              event: true,
+              date: true,
+              description: true,
+              fee: true,
+            },
+          },
+          user: {
+            select: {
+              email: true,
+            },
+          },
+          team: {
+            select: {
+              teamName: true,
+              players: true,
+            },
+          },
+        },
+      });
+      res.status(201).json({
+        message: "Gets all the Users Registered Details Successfully",
+        eventRegistrationDetails: allUserRegistedDetails,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error", error: error });
+    }
+  }
+);
+
+//update approve of the payment
+router.put("/approve/:registrationId", validate, async (req, res) => {
+  const registrationId = Number(req.params.registrationId);
+  const { approved } = req.body;
+
+  try {
+    const updatedRegistration = await prisma.registration.update({
+      where: { id: registrationId },
+      data: { approved },
+    });
+
+    res.json({ message: "Updated successfully", data: updatedRegistration });
+  } catch (error) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
 export default router;

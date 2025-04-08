@@ -185,7 +185,7 @@ export const userRegisterMiddleware = async (
       return;
     }
 
-    const eventParsed = stringSchema.safeParse(event);
+    const eventParsed = stringSchema.safeParse(event.toLowerCase());
     if (!eventParsed.success) {
       res.status(400).json({
         message: "Invalid event",

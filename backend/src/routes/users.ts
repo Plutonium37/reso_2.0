@@ -115,7 +115,6 @@ interface CostomRequest extends Request {
   players?: Player[];
   bankingName?: string;
   transactionId?: string;
-  paymentProof?: string;
 }
 
 //user event registration
@@ -126,7 +125,6 @@ router.post(
   async (req: CostomRequest, res: Response) => {
     try {
       const {
-        email,
         userId,
         eventId,
         gender,
@@ -136,7 +134,6 @@ router.post(
         individual,
         bankingName,
         transactionId,
-        paymentProof,
       } = req;
 
       // If individual registration
@@ -150,7 +147,6 @@ router.post(
             individual: true,
             bankingName: bankingName!,
             transactionId: transactionId!,
-            paymentUrl: paymentProof!,
             userId: userId!,
             eventId: eventId!,
           },
@@ -179,7 +175,6 @@ router.post(
             individual: false,
             bankingName: bankingName!,
             transactionId: transactionId!,
-            paymentUrl: paymentProof!,
             userId: userId!,
             eventId: eventId!,
           },
@@ -219,6 +214,7 @@ router.get(
       const registeredDetails = await prisma.registration.findMany({
         where: { userId: uid },
         select: {
+          id:true,
           createdAt: true,
           name: true,
           gender: true,
@@ -227,7 +223,6 @@ router.get(
           individual:true,
           transactionId: true,
           bankingName: true,
-          paymentUrl: true,
           approved: true,
           event: {
             select: {
@@ -256,7 +251,7 @@ router.get(
         .json({ message: "Get details  successfully", registeredDetails });
       return;
     } catch (error) {
-      res.status(500).json({ message: "Internal Server Error", error });
+      res.status(500).json({ message: "Can't get the details", error });
       return;
     }
   }
@@ -302,7 +297,7 @@ router.get(
       );
       if (filtered) {
         res.status(409).json({
-          message: "Already registered in this event ",
+          message: "Already Registered in this Event ",
           eventRegistered: true,
         });
         return;

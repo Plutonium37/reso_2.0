@@ -16,7 +16,6 @@ const CommonForm: React.FC<Props> = (event) => {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
 
@@ -120,59 +119,6 @@ const CommonForm: React.FC<Props> = (event) => {
               })}
               error={errors.bankingName?.message as string}
             />
-            {/* Payment Screenshot Upload */}
-            <div className="mt-4">
-              <label
-                className="text-white block mb-2"
-                htmlFor="paymentScreenshot"
-              >
-                Upload Payment Screenshot (JPG/PNG, Max 2MB)
-              </label>
-
-              {/* Hidden input */}
-              <input
-                id="paymentScreenshot"
-                type="file"
-                accept="image/jpeg, image/png"
-                {...register("paymentScreenshot", {
-                  required: "Payment screenshot is required",
-                  validate: {
-                    acceptedFormats: (files: FileList) =>
-                      (files[0] &&
-                        ["image/jpeg", "image/png"].includes(files[0]?.type)) ||
-                      "Only JPG/PNG files are allowed.",
-                    fileSize: (files: FileList) =>
-                      (files[0] && files[0].size < 2 * 1024 * 1024) || // 2MB
-                      "File size must be under 2MB.",
-                  },
-                })}
-                className="hidden"
-              />
-
-              {/* Flex container for button and filename */}
-              <div className="flex items-center gap-3">
-                <label
-                  htmlFor="paymentScreenshot"
-                  className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-200"
-                >
-                  Choose File
-                </label>
-
-                {/* Display filename if selected */}
-                {watch("paymentScreenshot")?.length > 0 && (
-                  <span className="text-white text-sm truncate max-w-[200px]">
-                    {watch("paymentScreenshot")[0]?.name}
-                  </span>
-                )}
-              </div>
-
-              {/* Show error if exists */}
-              {errors.paymentScreenshot && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.paymentScreenshot.message as string}
-                </p>
-              )}
-            </div>
             <div className="flex justify-between mt-4">
               <Button
                 label="Back"

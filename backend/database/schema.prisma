@@ -51,7 +51,6 @@ model Registration {
   address       String
   transactionId String
   bankingName   String
-  paymentUrl    String
   approved      Boolean  @default(false)
   individual    Boolean  @default(true)
 

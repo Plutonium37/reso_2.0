@@ -115,7 +115,7 @@ export const adminEventMiddleware = async (
     const updatedData: Partial<Event> = {};
 
     if (event !== undefined) {
-      const eventParse = stringSchema.safeParse(event);
+      const eventParse = stringSchema.safeParse(event.toLowerCase());
       if (!eventParse.success) {
         res.status(400).json({
           message: "Invalid event",
