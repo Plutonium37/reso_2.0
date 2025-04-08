@@ -103,14 +103,14 @@ const SuperAdminHeader = () => {
           Admin
         </RouterLink>
         <RouterLink
-          to="/superadmin/event-user"
+          to="/superadmin/registered"
           className={`mr-5 transition duration-300 hover:text-red-400 ${
-            location.pathname === "/superadmin/event-user"
+            location.pathname === "/superadmin/registered"
               ? "text-red-400 font-bold "
               : "text-white"
           }`}
         >
-          Edit
+          Registered
         </RouterLink>
         <RouterLink
           to="/superadmin/profile"

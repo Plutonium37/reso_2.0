@@ -8,6 +8,7 @@ import {
   createEventWithAdmin,
   sAdminSigninMiddleware,
   sAdminSignupMiddleware,
+  superAdminEventMiddleware,
 } from "../middleware/superAdminMiddleware";
 dotenv.config();
 
@@ -337,4 +338,32 @@ router.put(
   }
 );
 
+
+interface CustomRequestEvent extends Request {
+  eventId?: number;
+  updatedData?: Partial<Event>;
+}
+//admin event update route
+router.put(
+  "/event",
+  validate,
+  superAdminEventMiddleware,
+  async (req: CustomRequestEvent, res: Response) => {
+    const { updatedData, eventId } = req;
+    try {
+      const eventDetails = await prisma.event.update({
+        where: { id: eventId },
+        data: { ...updatedData },
+      });
+
+      res
+        .status(200)
+        .json({ message: "Event updated successfully", eventDetails });
+      return;
+    } catch (error) {
+      res.status(500).json({ message: "Internal Server Error", error });
+      return;
+    }
+  }
+);
 export default router;

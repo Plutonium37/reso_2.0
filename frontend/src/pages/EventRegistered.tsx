@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Pdf from "./Pdf"; // Adjust if your path is different
+import Pdf from "../Utils/Pdf"; // Adjust if your path is different
 
 type RegisteredEvent = {
   event: {

@@ -11,6 +11,7 @@ interface Props {
 }
 
 interface FormData {
+  name:string;
   teamLeader: string;
   teamLeaderId: number;
   gender1: string;
@@ -159,6 +160,15 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
         {!showPayment ? (
           <>
             <label className="text-white text-2xl pt-7">Team Details :</label>
+            <Input
+                label="Team Name"
+                id="name"
+                type="text"
+                register={register("name", {
+                  required: "Team Name is required",
+                })}
+                error={errors.name?.message as string | undefined}
+              />
             <div className="grid grid-cols-3 gap-4 mb-2">
               <Input
                 label="Team Leader Name"

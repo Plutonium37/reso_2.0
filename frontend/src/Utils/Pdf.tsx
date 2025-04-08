@@ -15,62 +15,54 @@ const Pdf = ({ item }: { item: any }) => {
     if (printContent) {
       const printWindow = window.open("", "", "width=800,height=600");
       if (printWindow) {
-        const doc = printWindow.document;
-
-        // Build the content using DOM APIs
-        doc.open();
-        const html = doc.createElement("html");
-        const head = doc.createElement("head");
-        const style = doc.createElement("style");
-
-        style.textContent = `
-          body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-          }
-          .print-container {
-            width: 700px;
-          }
-          h2, h3 {
-            color: #dc2626;
-            text-align: center;
-            margin: 20px 0 10px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-          }
-          th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: left;
-          }
-          th {
-            background-color: #f3f4f6;
-          }
-          ul {
-            padding-left: 20px;
-          }
-          hr {
-            margin: 20px 0;
-          }
-        `;
-        head.appendChild(style);
-        html.appendChild(head);
-
-        const body = doc.createElement("body");
-        const container = doc.createElement("div");
-        container.className = "print-container";
-        container.innerHTML = printContent.innerHTML;
-
-        body.appendChild(container);
-        html.appendChild(body);
-        doc.write(html.outerHTML);
-        doc.close();
-
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>RegistrationForm-RESO2025</title>
+              <style>
+                body {
+                  font-family: Arial, sans-serif;
+                  padding: 20px;
+                  display: flex;
+                  justify-content: center;
+                }
+                .print-container {
+                  width: 700px;
+                }
+                h2, h3 {
+                  color: #dc2626;
+                  text-align: center;
+                  margin: 20px 0 10px;
+                }
+                table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  margin: 20px 0;
+                }
+                th, td {
+                  border: 1px solid #ccc;
+                  padding: 10px;
+                  text-align: left;
+                }
+                th {
+                  background-color: #f3f4f6;
+                }
+                ul {
+                  padding-left: 20px;
+                }
+                hr {
+                  margin: 20px 0;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="print-container">
+                ${printContent.innerHTML}
+              </div>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
         printWindow.focus();
         printWindow.print();
         printWindow.close();
