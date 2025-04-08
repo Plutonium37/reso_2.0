@@ -1,4 +1,4 @@
-import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
+import { Link as RouterLink} from "react-router-dom";
 const About = () => {
     return (
       <section className="min-h-screen bg-gradient-to-br from-slate-900 to-black text-white px-6 py-16 flex flex-col items-center justify-center">

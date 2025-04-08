@@ -68,10 +68,10 @@ function App() {
       !authStatus ? (
         <Route path="/" element={<Landing />}>
           <Route index element={<Main />} />
-          <Route path="signin" element={<Signin />} />
-          <Route path="admin-signin" element={<AdminSignin />} />
-          <Route path="sadmin-signin" element={<SadminSignin />} />
-          <Route path="signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/admin-signin" element={<AdminSignin />} />
+          <Route path="/sadmin-signin" element={<SadminSignin />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<Error />} />
         </Route>
       ) : authStatus.auth === "ADMIN" ? (
