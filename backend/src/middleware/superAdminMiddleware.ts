@@ -6,7 +6,7 @@ import {
   passwordSchema,
   numberSchema,
 } from "./validation";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient,Event } from "@prisma/client";
 
 const prisma = new PrismaClient();
 dotenv.config();
@@ -240,6 +240,113 @@ export const createEventWithAdmin = async (
     req.paymentQr = paymentQr;
     req.fee = feeParse.data
 
+    next();
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+
+interface CustomRequestEvent extends Request {
+  email?: string;
+  eventId?: number;
+  updatedData?: Partial<Event>;
+}
+
+export const superAdminEventMiddleware = async (
+  req: CustomRequestEvent,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const {  email } = req;
+    const { event, date, description, fee, eventId} = req.body;
+
+    //parsing eventId to number and checking it's a number or not
+    const parsedEventId = parseInt(eventId);
+    if (isNaN(parsedEventId)) {
+      res.status(400).json({ message: "Invalid event ID" });
+      return;
+    }
+    
+    // Find Admin in Database
+    const admin = await prisma.sadmin.findUnique({
+      where: { email: email },
+    });
+
+    if (!admin) {
+      res.status(409).json({ message: "Admin doesn't exist" });
+      return;
+    }
+
+    // Find the event
+    const existingEvent = await prisma.event.findUnique({
+      where: { id: parsedEventId },
+    });
+
+    if (!existingEvent) {
+      res.status(404).json({ message: "Event not found" });
+      return;
+    }
+
+    // Validate only the fields that are provided
+    const updatedData: Partial<Event> = {};
+    if (event !== undefined) {
+      const eventParse = stringSchema.safeParse(event.toLowerCase());
+      if (!eventParse.success) {
+        res.status(400).json({
+          message: "Invalid event",
+          error: eventParse.error.format()._errors.join(", "),
+        });
+        return;
+      }
+      const existingEventCheck = await prisma.event.findUnique({
+        where: { event: eventParse.data! },
+      });
+      if(existingEventCheck){
+        res.status(409).json({message:"Event name already existed"})
+        return
+      }
+      updatedData.event = eventParse.data;
+    }
+
+    if (date !== undefined) {
+      const dateParse = stringSchema.safeParse(date);
+      if (!dateParse.success) {
+        res.status(400).json({
+          message: "Invalid date",
+          error: dateParse.error.format()._errors.join(", "),
+        });
+        return;
+      }
+      updatedData.date = dateParse.data;
+    }
+
+    if (description !== undefined) {
+      const descriptionParse = stringSchema.safeParse(description);
+      if (!descriptionParse.success) {
+        res.status(400).json({
+          message: "Invalid description",
+          error: descriptionParse.error.format()._errors.join(", "),
+        });
+        return;
+      }
+      updatedData.description = descriptionParse.data;
+    }
+    
+    if (fee !== undefined) {
+      const feeParse = numberSchema.safeParse(fee);
+      if (!feeParse.success) {
+        res.status(400).json({
+          message: "Invalid fee",
+          error: feeParse.error.format()._errors.join(", "),
+        });
+        return;
+      }
+      updatedData.fee = String(feeParse.data);
+    }
+    // Attach validated partial update data to request
+    req.updatedData = updatedData;
+    req.eventId = parsedEventId;
     next();
   } catch (error) {
     res.status(500).json({ message: "Internal server error", error });

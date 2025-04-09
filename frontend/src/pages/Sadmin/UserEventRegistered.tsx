@@ -54,7 +54,7 @@ const Button = ({
   </button>
 );
 
-const RegisteredUser = () => {
+const UserEventRegistered = () => {
   const [eventsRegistered, setEventsRegistered] = useState<RegisteredEvent[]>(
     []
   );
@@ -79,7 +79,7 @@ const RegisteredUser = () => {
     const loadingToast = toast.loading("Updating status...");
     try {
       await axios.put(
-        `http://localhost:4000/admin/approve/${id}`,
+        `http://localhost:4000/sadmin/approve/${id}`,
         {
           approved: statusMap[id],
         },
@@ -112,14 +112,14 @@ const RegisteredUser = () => {
       }
       try {
         const response = await axios.get(
-          "http://localhost:4000/admin/register-details",
+          "http://localhost:4000/sadmin/user-registered",
           {
             headers: {
               Authorization: token,
             },
           }
         );
-        setEventsRegistered(response.data.registerDetails);
+        setEventsRegistered(response.data.eventRegistrationDetails);
       } catch (error) {
         console.error("Error fetching registration data:", error);
       }
@@ -235,4 +235,4 @@ const RegisteredUser = () => {
   );
 };
 
-export default RegisteredUser;
+export default UserEventRegistered;

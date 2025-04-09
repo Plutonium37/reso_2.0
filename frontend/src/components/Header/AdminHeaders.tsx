@@ -92,6 +92,16 @@ const AdminHeader = () => {
           Event
         </RouterLink>
         <RouterLink
+          to="/admin/registered"
+          className={`mr-5 transition duration-300 hover:text-red-400 ${
+            location.pathname === "/admin/registered"
+              ? "text-red-400 font-bold "
+              : "text-white"
+          }`}
+        >
+          Registered
+        </RouterLink>
+        <RouterLink
           to="/admin/profile"
           className={`transition duration-300 hover:text-red-400 ${
             location.pathname === "/profile"

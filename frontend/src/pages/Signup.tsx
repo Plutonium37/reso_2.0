@@ -118,7 +118,7 @@ const Signup = () => {
         {/* Sign In Link */}
         <div className="flex">
           <h3 className="mr-1 text-white">Already have an account?</h3>
-          <RouterLink to="/login" className="text-red-500 hover:font-semibold">
+          <RouterLink to="/signin" className="text-red-500 hover:font-semibold">
             Sign In
           </RouterLink>
         </div>

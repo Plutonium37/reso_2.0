@@ -18,12 +18,17 @@ import Landing from "./main/Landing";
 import User from "./main/User";
 import axios from "axios";
 import AdminProfile  from "./pages/Admin/AdminProfile";
+import EditEvent  from "./pages/Admin/EditEvent";
+import RegisteredUser  from "./pages/Admin/RegisteredUser";
 import SadminSignin  from "./pages/Sadmin/SadminSignin";
 import SadminProfile  from "./pages/Sadmin/SadminProfile";
 import CreateAdminEvent  from "./pages/Sadmin/CreateAdminEvent";
 import SadminAdminEvent  from "./pages/Sadmin/SadminAdminEvent";
 import SuperAdmin from "./main/Superadmin"
 import Admin from "./main/Admin";
+import UserEventRegistered from "./pages/Sadmin/UserEventRegistered"
+
+
 interface AuthStatus {
   auth: "USER" | "ADMIN" | "SUPERADMIN";
 }
@@ -63,16 +68,17 @@ function App() {
       !authStatus ? (
         <Route path="/" element={<Landing />}>
           <Route index element={<Main />} />
-          <Route path="signin" element={<Signin />} />
-          <Route path="admin-signin" element={<AdminSignin />} />
-          <Route path="sadmin-signin" element={<SadminSignin />} />
-          <Route path="signup" element={<Signup />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/admin-signin" element={<AdminSignin />} />
+          <Route path="/sadmin-signin" element={<SadminSignin />} />
+          <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<Error />} />
         </Route>
       ) : authStatus.auth === "ADMIN" ? (
         <Route path="/" element={<Admin />}>
           <Route index element={<Main />} />
-          <Route path="/admin/event" element={<Register />} />
+          <Route path="/admin/event" element={<EditEvent />} />
+          <Route path="/admin/registered" element={<RegisteredUser />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="*" element={<Error />} />
         </Route>
@@ -81,6 +87,7 @@ function App() {
           <Route index element={<Main />} />
           <Route path="/superadmin/create-admin-event" element={<CreateAdminEvent />} />
           <Route path="/superadmin/details-event-admin" element={<SadminAdminEvent />} />
+          <Route path="/superadmin/registered" element={<UserEventRegistered />} />
           <Route path="/superadmin/profile" element={<SadminProfile />} />
           <Route path="*" element={<Error />} />
         </Route>
