@@ -113,7 +113,6 @@ router.post(
         event,
         date,
         description,
-        paymentQr,
         fee,
       } = req;
       const { newEvent, newAdmin } = await prisma.$transaction(
@@ -124,7 +123,6 @@ router.post(
               date: date ?? "",
               description: description ?? "",
               fee: String(fee) ?? "",
-              paymentQr: paymentQr ?? "N/A",
             },
           });
 

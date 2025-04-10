@@ -114,7 +114,6 @@ interface CustomRequest extends Request {
   date?: string;
   fee?:number
   description?: string;
-  paymentQr?: string;
 }
 
 //superadmin create event with admin
@@ -144,7 +143,6 @@ export const createEventWithAdmin = async (
       event,
       date,
       description,
-      paymentQr,
       fee,
     } = req.body;
 
@@ -237,7 +235,6 @@ export const createEventWithAdmin = async (
     req.event = eventParsed.data;
     req.date = dateParsed.data;
     req.description = descriptionParsed.data;
-    req.paymentQr = paymentQr;
     req.fee = feeParse.data
 
     next();

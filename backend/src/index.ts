@@ -61,6 +61,25 @@ app.use("/users", users);
 app.use("/admin", admin);
 app.use("/sadmin", superadmin);
 
+// Global Error Handler
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error("Global Error:", err);
+
+  if (err.name === "UnauthorizedError") {
+    res.status(401).json({ message: "Invalid token" });
+    return;
+  }
+
+  if (err.name === "PrismaClientKnownRequestError") {
+    res.status(400).json({ message: "Database Error", detail: err.meta });
+    return;
+  }
+
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
+});
 
 // Start server
 app.listen(PORT, () => {

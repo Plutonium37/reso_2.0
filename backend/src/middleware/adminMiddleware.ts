@@ -80,7 +80,7 @@ export const adminEventMiddleware = async (
 ) => {
   try {
     const {  email, eventId } = req;
-    const { event, date, description, paymentQr, fee} = req.body;
+    const { event, date, description, fee} = req.body;
 
     // Find Admin in Database
     const admin = await prisma.admin.findUnique({
@@ -157,17 +157,6 @@ export const adminEventMiddleware = async (
       updatedData.description = descriptionParse.data;
     }
 
-    if (paymentQr !== undefined) {
-      const paymentQrParse = stringSchema.safeParse(paymentQr);
-      if (!paymentQrParse.success) {
-        res.status(400).json({
-          message: "Invalid File Format",
-          error: paymentQrParse.error.format()._errors.join(", "),
-        });
-        return;
-      }
-      updatedData.paymentQr = paymentQrParse.data;
-    }
     if (fee !== undefined) {
       const feeParse = numberSchema.safeParse(fee);
       if (!feeParse.success) {
