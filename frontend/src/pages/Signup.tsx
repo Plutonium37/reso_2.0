@@ -38,87 +38,87 @@ const Signup = () => {
   };
 
   return (
-    <div className="h-screen bg-black flex items-center justify-center">
-      <div className="mb-4  sm:w-3/5 md:w-2/5 lg:w-1/4 opacity-80 bg-zinc-950 py-6 px-6 rounded-xl drop-shadow-[0_0_20px_rgba(255,100,0,0.8)] shadow-[0_0_20px_rgba(255,100,0,0.8)]">
-        <h1 className="text-3xl font-bold text-center text-white mb-5">
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-gray-800 border border-gray-700 rounded-xl shadow-2xl py-8 px-6 sm:px-8">
+        <h1 className="text-3xl font-bold text-center text-blue-400 mb-6">
           Sign Up
         </h1>
 
         {/* Form */}
-        <form noValidate className="mb-4" onSubmit={handleSubmit(onSubmit)}>
-          <hr className="border-1 border-red-400 shadow-[0_0_10px_rgba(255,0,0,0.8)] drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]" />
+        <form noValidate className="mb-5" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-5">
+            <Input
+              label="Name"
+              id="name"
+              type="text"
+              register={register("name", { required: "Name is required" })}
+              error={errors.name?.message as string | undefined}
+            />
 
-          <div className="grid gap-4">
-            <div className="grid gap-1">
-              <Input
-                label="Name"
-                id="name"
-                type="text"
-                register={register("name", { required: "Name is required" })}
-                error={errors.name?.message as string | undefined}
-              />
+            <Input
+              label="Email"
+              id="email"
+              type="email"
+              register={register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+\.\S{2,}$/,
+                  message: "Invalid email",
+                },
+              })}
+              error={errors.email?.message as string | undefined}
+            />
 
+            <div className="relative">
               <Input
-                label="Email"
-                id="email"
-                type="email"
-                register={register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^\S+@\S+\.\S{2,}$/,
-                    message: "Invalid email",
-                  },
+                label="Password"
+                id="password"
+                type={showPassword ? "text" : "password"}
+                register={register("password", {
+                  required: "Password is required",
+                  minLength: { value: 6, message: "At least 6 characters" },
+                  maxLength: { value: 30, message: "At most 30 characters" },
                 })}
-                error={errors.email?.message as string | undefined}
+                error={errors.password?.message as string | undefined}
               />
-
-              <div className="relative">
-                <Input
-                  label="Password"
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  register={register("password", {
-                    required: "Password is required",
-                    minLength: { value: 6, message: "At least 6 characters" },
-                    maxLength: { value: 30, message: "At most 30 characters" },
-                  })}
-                  error={errors.password?.message as string | undefined}
-                />
-                {password && (
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-18 mr-2 right-3 -translate-y-1/2 text-gray-400 hover:text-white"
-                  >
-                    {showPassword ? (
-                      <LuEye size={20} />
-                    ) : (
-                      <LuEyeClosed size={20} />
-                    )}
-                  </button>
-                )}
-              </div>
-
-              <Input
-                label="Re-enter Password"
-                id="confirm_password"
-                type="password"
-                register={register("confirm_password", {
-                  required: "Confirm your password",
-                  validate: (value) =>
-                    value === password || "Passwords do not match",
-                })}
-                error={errors.confirm_password?.message as string | undefined}
-              />
+              {password && (
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute top-10 right-3 text-gray-400 hover:text-blue-400 transition-colors"
+                >
+                  {showPassword ? (
+                    <LuEye size={20} />
+                  ) : (
+                    <LuEyeClosed size={20} />
+                  )}
+                </button>
+              )}
             </div>
-            <Button label="Create Account" type="submit" />
+
+            <Input
+              label="Confirm Password"
+              id="confirm_password"
+              type="password"
+              register={register("confirm_password", {
+                required: "Confirm your password",
+                validate: (value) =>
+                  value === password || "Passwords do not match",
+              })}
+              error={errors.confirm_password?.message as string | undefined}
+            />
           </div>
+
+          <Button label="Create Account" type="submit" />
         </form>
 
         {/* Sign In Link */}
-        <div className="flex">
-          <h3 className="mr-1 text-white">Already have an account?</h3>
-          <RouterLink to="/signin" className="text-red-500 hover:font-semibold">
+        <div className="flex flex-wrap justify-center text-gray-300">
+          <span className="mr-1">Already have an account?</span>
+          <RouterLink
+            to="/signin"
+            className="text-blue-400 hover:text-blue-300 transition-colors"
+          >
             Sign In
           </RouterLink>
         </div>

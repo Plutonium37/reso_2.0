@@ -46,56 +46,68 @@ const Profile = () => {
   };
 
   const Sidebar = () => (
-    <div className="w-full md:w-64 bg-zinc-900 shadow-md shadow-red-500/50 p-6 rounded-lg h-full flex flex-col justify-start">
-      <div className="flex  text-left mb-6">
-        <h2 className="text-xl font-semibold text-red-500">
-          Hello, {profile?.name || "N/A"}
+    <div className="w-full md:w-64 bg-gray-800 border-r border-gray-700 p-6 h-full flex flex-col">
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold text-blue-400">
+          Hello, {profile?.name || "User"}
         </h2>
+        <p className="text-gray-400 text-sm">{profile?.email}</p>
       </div>
       <nav className="flex-1">
-        <ul className="space-y-3">
-          <li className="text-red-400 text-lg font-bold">My Profile</li>
+        <ul className="space-y-2">
+          <li className="text-gray-400 uppercase text-xs font-medium tracking-wider mb-4">
+            Navigation
+          </li>
           <li
-            className={`p-2 rounded cursor-pointer transition ${
-              !showEventsRegister ? "bg-red-600" : "hover:bg-red-500/30"
+            className={`px-4 py-3 rounded-lg cursor-pointer transition flex items-center gap-3 ${
+              !showEventsRegister
+                ? "bg-blue-900/50 text-blue-400 font-medium"
+                : "text-gray-300 hover:bg-gray-700"
             }`}
             onClick={() => {
               setShowEventsRegister(false);
               setIsMobileMenuOpen(false);
             }}
           >
+            <span>👤</span>
             Profile Information
           </li>
           <li
-            className={`p-2 rounded cursor-pointer transition ${
-              showEventsRegister ? "bg-red-600" : "hover:bg-red-500/30"
+            className={`px-4 py-3 rounded-lg cursor-pointer transition flex items-center gap-3 ${
+              showEventsRegister
+                ? "bg-blue-900/50 text-blue-400 font-medium"
+                : "text-gray-300 hover:bg-gray-700"
             }`}
             onClick={() => {
               setShowEventsRegister(true);
               setIsMobileMenuOpen(false);
             }}
           >
+            <span>📅</span>
             Events Registered
-          </li>
-          <li
-            className="p-2 flex items-center gap-2 rounded cursor-pointer transition hover:text-red-500 hover:font-bold"
-            onClick={handleLogOut}
-          >
-            <CiLogout className="text-xl" /> Logout
           </li>
         </ul>
       </nav>
+      <div className="mt-auto">
+        <button
+          onClick={handleLogOut}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-gray-700 transition"
+        >
+          <CiLogout className="text-lg" />
+          Logout
+        </button>
+      </div>
     </div>
   );
 
   return (
-    <div className="h-screen flex flex-col bg-black text-white">
-      {/* Top Navbar for Mobile */}
-      <div className="md:hidden flex items-center justify-between bg-zinc-950 p-4 shadow-md shadow-red-500/20">
-        <h1 className="text-xl font-bold text-red-500">My Profile</h1>
+    <div className="min-h-screen flex flex-col bg-gray-900 text-white">
+      {/* Mobile Header */}
+      <header className="md:hidden flex items-center justify-between bg-gray-800 p-4 border-b border-gray-700">
+        <h1 className="text-xl font-bold text-blue-400">My Profile</h1>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-white"
+          className="text-gray-300 hover:text-blue-400 transition"
         >
           {isMobileMenuOpen ? (
             <IoClose size={28} />
@@ -103,55 +115,72 @@ const Profile = () => {
             <FaAlignJustify size={24} />
           )}
         </button>
-      </div>
+      </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <div className="hidden md:block w-64 p-4 h-full">
+        {/* Desktop Sidebar */}
+        <aside className="hidden md:flex w-64 border-r border-gray-700">
           <Sidebar />
-        </div>
+        </aside>
 
         {/* Mobile Sidebar */}
         {isMobileMenuOpen && (
-          <div className="block md:hidden w-full p-4 absolute z-50 bg-black">
-            <Sidebar />
+          <div className="fixed inset-0 z-50 md:hidden">
+            <div 
+              className="absolute inset-0 bg-black/70" 
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            <div className="relative z-10 h-full w-3/4 max-w-sm bg-gray-800">
+              <Sidebar />
+            </div>
           </div>
         )}
 
         {/* Main Content */}
-        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
-          <div className="h-hvm bg-zinc-900 rounded-md shadow-md shadow-red-500/50 p-6 flex flex-col justify-start">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
             {profile ? (
               showEventsRegister ? (
                 <EventRegistered />
               ) : (
-                <div className="flex flex-col justify-between h-full">
-                  <div>
-                    <h1 className="text-red-500 text-2xl font-semibold mb-6 border-b border-red-500 pb-2">
+                <div className="space-y-8">
+                  <div className="pb-4 border-b border-gray-700">
+                    <h1 className="text-2xl font-bold text-blue-400">
                       Personal Information
                     </h1>
-                    <div className="space-y-6">
-                      <div className="flex flex-col md:flex-row md:justify-between">
-                        <h2 className="text-lg font-semibold">Name</h2>
-                        <p className="text-gray-400">
-                          {profile?.name || "N/A"}
-                        </p>
-                      </div>
-                      <div className="flex flex-col md:flex-row md:justify-between">
-                        <h2 className="text-lg font-semibold">Email Address</h2>
-                        <p className="text-gray-400">
-                          {profile?.email || "N/A"}
-                        </p>
-                      </div>
+                    <p className="text-gray-400">
+                      View and manage your profile details
+                    </p>
+                  </div>
+
+                  <div className="grid gap-6">
+                    <div className="bg-gray-700/50 p-4 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-400 mb-1">
+                        Full Name
+                      </h3>
+                      <p className="text-lg font-medium">
+                        {profile?.name || "N/A"}
+                      </p>
+                    </div>
+
+                    <div className="bg-gray-700/50 p-4 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-400 mb-1">
+                        Email Address
+                      </h3>
+                      <p className="text-lg font-medium">
+                        {profile?.email || "N/A"}
+                      </p>
                     </div>
                   </div>
                 </div>
               )
             ) : (
-              <Loading />
+              <div className="flex justify-center items-center h-64">
+                <Loading />
+              </div>
             )}
           </div>
-        </div>
+        </main>
       </div>
     </div>
   );

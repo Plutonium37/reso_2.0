@@ -3,6 +3,7 @@ import Input from "../../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
 import axios from "../../utils/axios";
+import { FaUserCog } from "react-icons/fa";
 
 const AdminSignin = () => {
   const {
@@ -25,20 +26,25 @@ const AdminSignin = () => {
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   };
+
   const onSubmit = (data: any) => {
     signIn(data);
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <div className="mb-4 sm:w-3/5 md:w-2/5 lg:w-1/5 opacity-80 bg-zinc-950 py-6 px-6 rounded-xl drop-shadow-[0_0_20px_rgba(255,100,0,0.8)] shadow-[0_0_20px_rgba(255,100,0,0.8)]">
-        <h1 className="text-4xl font-bold text-center text-white mb-5">
-          Log In
-        </h1>
-        <form noValidate className="mb-4" onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-6">
-            <hr className="border-1 border-red-400 shadow-[0_0_10px_rgba(255,0,0,0.8)] drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]" />
-            <div className="grid gap-4 mt-3">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 p-4">
+      <div className="w-full max-w-md bg-gray-800 border border-gray-700 rounded-xl shadow-xl p-8">
+        <div className="flex flex-col items-center mb-8">
+          <div className="bg-blue-600/20 p-4 rounded-full mb-4">
+            <FaUserCog className="text-blue-400 text-4xl" />
+          </div>
+          <h1 className="text-3xl font-bold text-blue-400 mb-2">Admin Login</h1>
+          <p className="text-gray-400">Enter your admin credentials</p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-4">
+            <div className="relative">
               <Input
                 label="Email"
                 id="email"
@@ -52,7 +58,9 @@ const AdminSignin = () => {
                 })}
                 error={errors.email?.message as string | undefined}
               />
+            </div>
 
+            <div className="relative">
               <Input
                 label="Password"
                 id="password"
@@ -65,8 +73,9 @@ const AdminSignin = () => {
                 error={errors.password?.message as string | undefined}
               />
             </div>
-            <Button label={"Sign In"} type={"submit"} />
           </div>
+
+          <Button label="Sign In" type="submit" />
         </form>
       </div>
     </div>

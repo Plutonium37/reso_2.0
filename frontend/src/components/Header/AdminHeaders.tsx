@@ -2,6 +2,8 @@ import { scroller } from "react-scroll";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
+import { FiHome, FiCalendar, FiInfo } from "react-icons/fi";
+
 const AdminHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,60 +58,64 @@ const AdminHeader = () => {
     };
   }, [location.pathname]);
 
-  const sections: Array<"home" | "event" | "about"> = [
-    "home",
-    "event",
-    "about",
+  const sections = [
+    { id: "home", icon: <FiHome className="mr-2" />, label: "Home" },
+    { id: "event", icon: <FiCalendar className="mr-2" />, label: "Events" },
+    { id: "about", icon: <FiInfo className="mr-2" />, label: "About" },
   ];
+
   return (
-    <nav className="fixed top-0 left-0 w-full p-4 pr-7 shadow flex justify-between border-b border-red-500 z-50 bg-zinc-900">
-      <div className="text-white flex items-center">
+    <nav className="fixed top-0 left-0 w-full px-6 py-3 shadow-md flex justify-between items-center border-b border-blue-500/30 z-50 bg-gray-900 backdrop-blur-sm">
+      <div className="flex items-center space-x-6">
         {sections.map((section) => (
-          <span
-            key={section}
-            className={`ml-7 cursor-pointer transition duration-300 hover:text-red-400 ${
-              location.pathname === "/" && activeSection === section
-                ? "text-red-400 font-bold "
-                : location.pathname !== "/"
-                ? "text-white"
-                : ""
+          <button
+            key={section.id}
+            onClick={() => handleNavClick(section.id as "home" | "event" | "about")}
+            className={`flex items-center px-3 py-2 rounded-md transition-all duration-300 ${
+              location.pathname === "/" && activeSection === section.id
+                ? "text-blue-400 bg-blue-900/20 font-medium"
+                : "text-gray-300 hover:text-blue-400 hover:bg-gray-800"
             }`}
-            onClick={() => handleNavClick(section)}
           >
-            {section.charAt(0).toUpperCase() + section.slice(1)}
-          </span>
+            {section.icon}
+            {section.label}
+          </button>
         ))}
       </div>
-      <div className="text-white flex justify-between items-center">
+
+      <div className="flex items-center space-x-4">
         <RouterLink
           to="/admin/event"
-          className={`mr-5 transition duration-300 hover:text-red-400 ${
+          className={`px-3 py-2 rounded-md transition-all duration-300 flex items-center ${
             location.pathname === "/admin/event"
-              ? "text-red-400 font-bold "
-              : "text-white"
+              ? "text-blue-400 bg-blue-900/20 font-medium"
+              : "text-gray-300 hover:text-blue-400 hover:bg-gray-800"
           }`}
         >
-          Event
+          <FiCalendar className="mr-2" />
+          Events
         </RouterLink>
         <RouterLink
           to="/admin/registered"
-          className={`mr-5 transition duration-300 hover:text-red-400 ${
+          className={`px-3 py-2 rounded-md transition-all duration-300 flex items-center ${
             location.pathname === "/admin/registered"
-              ? "text-red-400 font-bold "
-              : "text-white"
+              ? "text-blue-400 bg-blue-900/20 font-medium"
+              : "text-gray-300 hover:text-blue-400 hover:bg-gray-800"
           }`}
         >
+          <FiCalendar className="mr-2" />
           Registered
         </RouterLink>
         <RouterLink
           to="/admin/profile"
-          className={`transition duration-300 hover:text-red-400 ${
-            location.pathname === "/profile"
-              ? "text-red-400 font-bold "
-              : "text-white"
+          className={`p-2 rounded-full transition-all duration-300 ${
+            location.pathname === "/admin/profile"
+              ? "text-blue-400 bg-blue-900/20"
+              : "text-gray-300 hover:text-blue-400 hover:bg-gray-800"
           }`}
+          title="Profile"
         >
-          <CgProfile className="size-7" />
+          <CgProfile className="w-6 h-6" />
         </RouterLink>
       </div>
     </nav>

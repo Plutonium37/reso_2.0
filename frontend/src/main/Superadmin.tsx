@@ -5,7 +5,7 @@ const SuperAdmin = () => {
   return (
     <div>
       <SuperAdminHeader />
-      <main className="pt-16 bg-black">
+      <main className="pt-14 bg-black">
         <Outlet />
       </main>
       <Footer />

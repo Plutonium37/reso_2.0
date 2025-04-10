@@ -1,11 +1,13 @@
 import { scroller } from "react-scroll";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { FiHome, FiCalendar, FiInfo, FiLogIn } from "react-icons/fi";
 
 const LandingHeader = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleNavClick = (section: "home" | "event" | "about") => {
     if (location.pathname !== "/") {
@@ -32,6 +34,14 @@ const LandingHeader = () => {
   }, [location.pathname]);
 
   useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
     if (location.pathname !== "/") {
       setActiveSection("");
       return;
@@ -56,49 +66,58 @@ const LandingHeader = () => {
     };
   }, [location.pathname]);
 
-  const sections: Array<"home" | "event" | "about"> = [
-    "home",
-    "event",
-    "about",
+  const sections = [
+    { id: "home", icon: <FiHome className="mr-2" />, label: "Home" },
+    { id: "event", icon: <FiCalendar className="mr-2" />, label: "Events" },
+    { id: "about", icon: <FiInfo className="mr-2" />, label: "About" },
   ];
+
   return (
-    <nav className="fixed top-2% left-2% w-full p-4 pr-7 shadow flex justify-between border-b border-red-500 z-50 bg-zinc-900">
-      <div className="text-white ">
-        <h1 className="text-4xl">RESO</h1>
+    <nav className={`fixed top-0 left-0 w-full px-6 py-3 flex justify-between items-center transition-all duration-300 z-50 ${
+      isScrolled 
+        ? "bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-red-500/30" 
+        : "bg-transparent"
+    }`}>
+      <div className="text-white">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">
+          RESO
+        </h1>
       </div>
-      <div className="text-white flex  items-center">
+
+      <div className="hidden md:flex items-center space-x-6">
         {sections.map((section) => (
-          <span
-            key={section}
-            className={`ml-7 cursor-pointer transition duration-300 hover:text-red-400 ${
-              location.pathname === "/" && activeSection === section
-                ? "text-red-400 font-bold "
-                : location.pathname !== "/"
-                ? "text-white"
-                : ""
+          <button
+            key={section.id}
+            onClick={() => handleNavClick(section.id as "home" | "event" | "about")}
+            className={`flex items-center px-3 py-2 rounded-md transition-all duration-300 ${
+              location.pathname === "/" && activeSection === section.id
+                ? "text-red-500 font-medium"
+                : "text-gray-300 hover:text-red-400"
             }`}
-            onClick={() => handleNavClick(section)}
           >
-            {section.charAt(0).toUpperCase() + section.slice(1)}
-          </span>
+            {section.icon}
+            {section.label}
+          </button>
         ))}
       </div>
-      <div className="text-white flex items-center">
-        <button className="relative inline-block px-8 py-3 font-semibold tracking-wider text-white transition-all duration-300 ease-out border border-cyan-400 rounded-full group hover:scale-105 hover:shadow-[0_0_25px_rgba(34,211,238,0.7)] hover:border-cyan-300 overflow-hidden">
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 opacity-0 group-hover:opacity-20 transition duration-300 blur-sm"></span>
-          <span className="relative z-10">
-            <RouterLink
-              to="/signup"
-              className={`transition duration-300 hover:text-red-400 ${
-                location.pathname === "/signup"
-                  ? "text-red-400 font-bold "
-                  : "text-white"
-              }`}
-            >
-              Register
-            </RouterLink>
+
+      <div className="flex items-center space-x-4">
+        <RouterLink
+          to="/signin"
+          className="hidden md:flex items-center px-4 py-2 text-gray-300 hover:text-red-400 transition duration-300"
+        >
+          <FiLogIn className="mr-2" />
+          Login
+        </RouterLink>
+        <RouterLink
+          to="/signup"
+          className="relative inline-flex items-center px-6 py-2 font-medium tracking-wider text-white transition-all duration-300 ease-out bg-gradient-to-r from-red-600 to-amber-500 rounded-full group hover:shadow-lg hover:shadow-red-500/30 overflow-hidden"
+        >
+          <span className="absolute inset-0 bg-gradient-to-r from-red-500 to-amber-400 opacity-0 group-hover:opacity-100 transition duration-300"></span>
+          <span className="relative z-10 flex items-center">
+            Register
           </span>
-        </button>
+        </RouterLink>
       </div>
     </nav>
   );

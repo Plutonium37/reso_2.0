@@ -3,11 +3,11 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import  { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useState } from "react";
 import axios from "../utils/axios";
-// Define the type for form input
+
 type FormData = {
   email: string;
   password: string;
@@ -45,15 +45,15 @@ const Signin = () => {
   };
 
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <div className="mb-4 sm:w-3/5 md:w-2/5 lg:w-1/5 opacity-80 bg-zinc-950 py-6 px-6 rounded-xl drop-shadow-[0_0_20px_rgba(255,100,0,0.8)] shadow-[0_0_20px_rgba(255,100,0,0.8)]">
-        <h1 className="text-4xl font-bold text-center text-white mb-5">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
+      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gray-800 py-8 px-6 sm:px-8 md:px-10 rounded-xl shadow-2xl border border-gray-700">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-400 mb-6">
           Log In
         </h1>
-        <form noValidate className="mb-4" onSubmit={handleSubmit(onSubmit)}>
+
+        <form noValidate className="mb-5" onSubmit={handleSubmit(onSubmit)}>
           <div className="grid gap-6">
-            <hr className="border-1 border-red-400 shadow-[0_0_10px_rgba(255,0,0,0.8)] drop-shadow-[0_0_10px_rgba(255,0,0,0.8)]" />
-            <div className="grid gap-4 mt-3">
+            <div className="grid gap-5">
               <Input
                 label="Email"
                 id="email"
@@ -67,6 +67,7 @@ const Signin = () => {
                 })}
                 error={errors.email?.message}
               />
+
               <div className="relative">
                 <Input
                   label="Password"
@@ -83,7 +84,7 @@ const Signin = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-18 mr-2 right-3 -translate-y-1/2 text-gray-400 hover:text-white"
+                    className="absolute top-10 right-3 text-gray-400 hover:text-blue-400 transition-colors"
                   >
                     {showPassword ? (
                       <LuEye size={20} />
@@ -94,13 +95,21 @@ const Signin = () => {
                 )}
               </div>
             </div>
-            <Button label="Sign In" type="submit" />
+
+            <Button
+              label="Sign In"
+              type="submit"
+            />
           </div>
         </form>
-        <div className="flex">
-          <h3 className="mr-1 text-white">Don't have an account?</h3>
-          <RouterLink to="/signup" className="text-red-500 hover:font-semibold">
-          Sign up
+
+        <div className="flex flex-wrap justify-center text-gray-300">
+          <span className="mr-1">Don't have an account?</span>
+          <RouterLink
+            to="/signup"
+            className="text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            Sign up
           </RouterLink>
         </div>
       </div>

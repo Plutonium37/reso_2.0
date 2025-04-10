@@ -19,7 +19,7 @@ const CreateAdminEvent = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<EventData>();
 
   const eventRegister = async (data: EventData) => {
     const token = localStorage.getItem("Authorization");
@@ -51,90 +51,135 @@ const CreateAdminEvent = () => {
     }
   };
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: EventData) => {
     eventRegister(data);
   };
 
   return (
-    <div className="">
-      <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
-        <div id="admin" className="mt-5">
-          <label htmlFor="admin" className="text-white text-2xl pt-5">
-            Admin Details:
-          </label>
-          <Input
-            label="Admin Name"
-            id="AdminName"
-            type="text"
-            register={register("AdminName", {
-              required: "AdminName is required",
-            })}
-            error={errors.AdminName?.message as string | undefined}
-          />
-          <div>
-            <Input
-              label="Admin Email"
-              id="AdminEmail"
-              type="email"
-              register={register("AdminEmail", {
-                required: "AdminEmail is required",
-              })}
-              error={errors.AdminEmail?.message as string | undefined}
-            />
-            <Input
-              label="Admin Password"
-              id="AdminPassword"
-              type="password"
-              register={register("AdminPassword", {
-                required: "AdminPassword is required",
-              })}
-              error={errors.AdminPassword?.message as string | undefined}
+    <div className="min-h-screen bg-gray-900 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl md:text-3xl font-bold text-white mb-6">
+          Create Event Admin
+        </h1>
+
+        <form className="grid gap-6" onSubmit={handleSubmit(onSubmit)}>
+          {/* Admin Details Section */}
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg">
+            <h2 className="text-white text-xl font-bold mb-4 border-b border-zinc-600 pb-2">
+              Admin Details
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+              <div className="md:col-span-2">
+                <Input
+                  label="Admin Name"
+                  id="AdminName"
+                  type="text"
+                  register={register("AdminName", {
+                    required: "Admin Name is required",
+                  })}
+                  error={errors.AdminName?.message}
+                />
+              </div>
+              <Input
+                label="Admin Email"
+                id="AdminEmail"
+                type="email"
+                register={register("AdminEmail", {
+                  required: "Admin Email is required",
+                  pattern: {
+                    value: /^\S+@\S+\.\S+$/,
+                    message: "Please enter a valid email address",
+                  },
+                })}
+                error={errors.AdminEmail?.message}
+              />
+              <Input
+                label="Admin Password"
+                id="AdminPassword"
+                type="password"
+                register={register("AdminPassword", {
+                  required: "Admin Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                error={errors.AdminPassword?.message}
+              />
+            </div>
+          </div>
+
+          {/* Event Details Section */}
+          <div className="bg-zinc-800 p-6 rounded-lg shadow-lg">
+            <h2 className="text-white text-xl font-bold mb-4 border-b border-zinc-600 pb-2">
+              Event Details
+            </h2>
+            <div className="grid gap-4">
+              <Input
+                label="Event Name"
+                id="eventName"
+                type="text"
+                register={register("eventName", {
+                  required: "Event Name is required",
+                })}
+                error={errors.eventName?.message}
+              />
+              <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+                <Input
+                  label="Event Date"
+                  id="eventDate"
+                  type="text"
+                  register={register("eventDate", {
+                    required: "Event Date is required",
+                  })}
+                  error={errors.eventDate?.message}
+                />
+                <Input
+                  label="Event Fee (₹)"
+                  id="eventFee"
+                  type="number"
+                  register={register("eventFee", {
+                    required: "Event Fee is required",
+                    min: {
+                      value: 0,
+                      message: "Fee cannot be negative",
+                    },
+                  })}
+                  error={errors.eventFee?.message}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="eventDescription"
+                  className="block text-sm font-medium text-gray-300 mb-1"
+                >
+                  Event Description
+                </label>
+                <textarea
+                  id="eventDescription"
+                  rows={4}
+                  className="w-full px-3 py-2 bg-zinc-700 border border-zinc-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  {...register("eventDescription", {
+                    required: "Event Description is required",
+                  })}
+                />
+                {errors.eventDescription && (
+                  <p className="mt-1 text-sm text-red-400">
+                    {errors.eventDescription.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button
+              label="Create Event"
+              type="submit"
             />
           </div>
-        </div>
-        <div className="bg-zinc-800 p-6 rounded-md shadow-lg">
-          <h2 className="text-white text-xl font-bold mb-4">Event Details</h2>
-          <Input
-            label="Event Name"
-            id="eventName"
-            type="text"
-            register={register("eventName", {
-              required: "Event Name is required",
-            })}
-            error={errors.eventName?.message as string}
-          />
-          <Input
-            label="Event Date"
-            id="eventDate"
-            type="text"
-            register={register("eventDate", {
-              required: "Event Date is required",
-            })}
-            error={errors.eventDate?.message as string}
-          />
-          <Input
-            label="Event Description"
-            id="eventDescription"
-            type="text"
-            register={register("eventDescription", {
-              required: "Event Description is required",
-            })}
-            error={errors.eventDescription?.message as string}
-          />
-          <Input
-            label="Event Fee"
-            id="eventFee"
-            type="number"
-            register={register("eventFee", {
-              required: "Event Fee is required",
-            })}
-            error={errors.eventFee?.message as string}
-          />
-          <div className="flex justify-between mt-4">
-            <Button label="Create" type="submit" />
-          </div>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };
