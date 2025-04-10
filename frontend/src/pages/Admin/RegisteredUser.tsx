@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Pdf from "../../Utils/Pdf";
+import Pdf from "../../utils/Pdf";
 import toast from "react-hot-toast";
 
 type RegisteredEvent = {

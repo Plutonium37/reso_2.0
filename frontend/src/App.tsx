@@ -16,7 +16,6 @@ import Signup from "./pages/Signup";
 import Error from "./pages/Error";
 import Landing from "./main/Landing";
 import User from "./main/User";
-import axios from "axios";
 import AdminProfile  from "./pages/Admin/AdminProfile";
 import EditEvent  from "./pages/Admin/EditEvent";
 import RegisteredUser  from "./pages/Admin/RegisteredUser";
@@ -27,7 +26,7 @@ import SadminAdminEvent  from "./pages/Sadmin/SadminAdminEvent";
 import SuperAdmin from "./main/Superadmin"
 import Admin from "./main/Admin";
 import UserEventRegistered from "./pages/Sadmin/UserEventRegistered"
-
+import axios from "./utils/axios";
 
 interface AuthStatus {
   auth: "USER" | "ADMIN" | "SUPERADMIN";
@@ -46,7 +45,7 @@ function App() {
         return;
       }
       try {
-        const response = await axios.get("http://localhost:4000/islogIn", {
+        const response = await axios.get("/islogIn", {
           headers: {
             Authorization: token,
           },

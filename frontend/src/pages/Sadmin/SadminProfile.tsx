@@ -3,7 +3,7 @@ import Loading from "../Loading";
 import { CiLogout } from "react-icons/ci";
 import { FaAlignJustify } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
-import axios from "axios";
+import axios from "../../utils/axios";
 import { toast } from "react-hot-toast";
 
 type UserProfile = {
@@ -27,7 +27,7 @@ const AdminProfile = () => {
         if (storedProfile) {
           setProfile(JSON.parse(storedProfile));
         } else {
-          const res = await axios.get("http://localhost:4000/sadmin/profile", {
+          const res = await axios.get("/sadmin/profile", {
             headers: { Authorization: localStorage.getItem("Authorization") },
           });
           setProfile(res.data.userData);
@@ -40,7 +40,7 @@ const AdminProfile = () => {
 
     const fetchRegistrationStatus = async () => {
       try {
-        const res = await axios.get("http://localhost:4000/sadmin/registration-open", {
+        const res = await axios.get("/sadmin/registration-open", {
           headers: { Authorization: localStorage.getItem("Authorization") },
         });
         setRegistrationOpen(res.data.registrationOpen);
@@ -64,7 +64,7 @@ const AdminProfile = () => {
     setIsUpdating(true);
     try {
       const res = await axios.put(
-        "http://localhost:4000/sadmin/registration-open",
+        "/sadmin/registration-open",
         { registrationOpen: selectedStatus },
         {
           headers: {

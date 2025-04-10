@@ -77,28 +77,28 @@ const LandingHeader = () => {
                 ? "text-white"
                 : ""
             }`}
-            onClick={() => handleNavClick(section)} 
+            onClick={() => handleNavClick(section)}
           >
             {section.charAt(0).toUpperCase() + section.slice(1)}
           </span>
         ))}
       </div>
       <div className="text-white flex items-center">
-      <button className="relative inline-block px-8 py-3 font-semibold tracking-wider text-white transition-all duration-300 ease-out border border-cyan-400 rounded-full group hover:scale-105 hover:shadow-[0_0_25px_rgba(34,211,238,0.7)] hover:border-cyan-300 overflow-hidden">
-  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 opacity-0 group-hover:opacity-20 transition duration-300 blur-sm"></span>
-  <span className="relative z-10"><RouterLink
-          to="/signup"
-          className={`transition duration-300 hover:text-red-400 ${
-            location.pathname === "/signup"
-              ? "text-red-400 font-bold "
-              : "text-white"
-          }`}
-        >
-          Register
-        </RouterLink></span>
-</button>
-
-      
+        <button className="relative inline-block px-8 py-3 font-semibold tracking-wider text-white transition-all duration-300 ease-out border border-cyan-400 rounded-full group hover:scale-105 hover:shadow-[0_0_25px_rgba(34,211,238,0.7)] hover:border-cyan-300 overflow-hidden">
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 opacity-0 group-hover:opacity-20 transition duration-300 blur-sm"></span>
+          <span className="relative z-10">
+            <RouterLink
+              to="/signup"
+              className={`transition duration-300 hover:text-red-400 ${
+                location.pathname === "/signup"
+                  ? "text-red-400 font-bold "
+                  : "text-white"
+              }`}
+            >
+              Register
+            </RouterLink>
+          </span>
+        </button>
       </div>
     </nav>
   );

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import axios from "axios";
+import axios from "../../utils/axios";
 import { useForm } from "react-hook-form";
 import Input from "../../components/Input";
 
@@ -18,7 +18,7 @@ const SadminAdminEvent = () => {
 
       try {
         const response = await axios.get(
-          "http://localhost:4000/sadmin/event-admin",
+          "/sadmin/event-admin",
           {
             headers: { Authorization: token },
           }

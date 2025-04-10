@@ -2,7 +2,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "../../utils/axios";
 
 type EventData = {
   AdminName: string;
@@ -29,7 +29,7 @@ const CreateAdminEvent = () => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:4000/sadmin/event-admin",
+        "/sadmin/event-admin",
         {
           name: data.AdminName,
           adminEmail: data.AdminEmail,

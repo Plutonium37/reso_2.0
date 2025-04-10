@@ -3,10 +3,10 @@ import Button from "../components/Button";
 import Input from "../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import axios, { AxiosError } from "axios";
+import  { AxiosError } from "axios";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useState } from "react";
-
+import axios from "../utils/axios";
 // Define the type for form input
 type FormData = {
   email: string;
@@ -26,7 +26,7 @@ const Signin = () => {
 
   const signIn = async (data: FormData) => {
     try {
-      const response = await axios.post("http://localhost:4000/users/signin", {
+      const response = await axios.post("/users/signin", {
         email: data.email,
         password: data.password,
       });
@@ -98,9 +98,9 @@ const Signin = () => {
           </div>
         </form>
         <div className="flex">
-          <h3 className="mr-1 text-white">Didn't have an account?</h3>
+          <h3 className="mr-1 text-white">Don't have an account?</h3>
           <RouterLink to="/signup" className="text-red-500 hover:font-semibold">
-            Sign Up
+          Sign up
           </RouterLink>
         </div>
       </div>

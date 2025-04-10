@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "../../utils/axios";
 import { useEffect, useState } from "react";
-import Pdf from "../../Utils/Pdf";
+import Pdf from "../../utils/Pdf";
 import toast from "react-hot-toast";
 
 type RegisteredEvent = {
@@ -79,7 +79,7 @@ const UserEventRegistered = () => {
     const loadingToast = toast.loading("Updating status...");
     try {
       await axios.put(
-        `http://localhost:4000/sadmin/approve/${id}`,
+        `/sadmin/approve/${id}`,
         {
           approved: statusMap[id],
         },
@@ -112,7 +112,7 @@ const UserEventRegistered = () => {
       }
       try {
         const response = await axios.get(
-          "http://localhost:4000/sadmin/user-registered",
+          "/sadmin/user-registered",
           {
             headers: {
               Authorization: token,

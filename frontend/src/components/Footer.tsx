@@ -30,7 +30,7 @@ function Footer() {
             </a>
 
             <a
-              href="https://www.instagram.com/"
+              href="https://www.instagram.com/reso_mit_/"
               target="_blank"
               rel="noopener noreferrer"
             >

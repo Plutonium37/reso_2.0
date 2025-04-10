@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import Button from "../components/Button";
 import Input from "../components/Input";
-import axios from "axios";
+import axios from "../utils/axios";
 import { LuEye, LuEyeClosed } from "react-icons/lu";
 import { useState } from "react";
 
@@ -20,7 +20,7 @@ const Signup = () => {
 
   const signUp = async (data: any) => {
     try {
-      const response = await axios.post("http://localhost:4000/users/signup", {
+      const response = await axios.post("/users/signup", {
         email: data.email,
         password: data.password,
         name: data.name,

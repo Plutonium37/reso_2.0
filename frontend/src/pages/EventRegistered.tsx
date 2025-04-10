@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios from "../utils/axios";
 import { useEffect, useState } from "react";
-import Pdf from "../Utils/Pdf"; // Adjust if your path is different
+import Pdf from "../utils/Pdf"; // Adjust if your path is different
 
 type RegisteredEvent = {
   event: {
@@ -58,7 +58,7 @@ const EventRegistered = () => {
         return;
       }
       try {
-        const response = await axios.get("http://localhost:4000/users/registered", {
+        const response = await axios.get("/users/registered", {
           headers: {
             Authorization: token,
           },

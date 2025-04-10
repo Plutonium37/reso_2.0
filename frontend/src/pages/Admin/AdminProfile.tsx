@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Loading from "../Loading";
 import { CiLogout } from "react-icons/ci";
-import axios from "axios";
+import axios from "../../utils/axios";
 import { FaAlignJustify } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
 
@@ -24,7 +24,7 @@ const AdminProfile = () => {
           return;
         }
 
-        const respond = await axios.get("http://localhost:4000/admin/profile", {
+        const respond = await axios.get("/admin/profile", {
           headers: {
             Authorization: localStorage.getItem("Authorization"),
           },

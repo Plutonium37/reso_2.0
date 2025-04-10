@@ -2,7 +2,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios from "../../utils/axios";
 
 const AdminSignin = () => {
   const {
@@ -13,7 +13,7 @@ const AdminSignin = () => {
 
   const signIn = async (data: any) => {
     try {
-      const response = await axios.post("http://localhost:4000/sadmin/signin", {
+      const response = await axios.post("/sadmin/signin", {
         superEmail: data.email,
         superPassword: data.password,
       });

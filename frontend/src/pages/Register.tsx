@@ -4,7 +4,7 @@ import Bgmi from "../components/Forms/Bgmi";
 import MobileLegend from "../components/Forms/MobileLegend";
 import { Quantum } from "ldrs/react"; 
 import CommonForm from "../components/Forms/CommonForm";
-import axios from "axios";
+import axios from "../utils/axios";
 type OptionType = {
   value: string;
   label: string;
@@ -99,7 +99,7 @@ const Register = () => {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/users/status");
+        const response = await axios.get("/users/status");
         setRegistrationOpen(response.data.registrationOpen);
       } catch (err) {
         console.error("Error fetching registration status", err);
