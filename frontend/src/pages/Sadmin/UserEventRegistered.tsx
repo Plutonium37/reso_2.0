@@ -219,16 +219,23 @@ const UserEventRegistered = () => {
     );
   }
 
-  const totalFees = eventsRegistered.reduce((sum, item) => {
-    return sum + Number(item.event.fee || 0);
-  }, 0);
-  const totalApprovedFees = eventsRegistered.reduce((sum, item) => {
-    return item.approved ? sum + Number(item.event.fee || 0) : sum;
-  }, 0);
+  // Calculate statistics
+  const totalFees = eventsRegistered.reduce(
+    (sum, item) => sum + Number(item.event.fee || 0),
+    0
+  );
+  const totalApprovedFees = eventsRegistered.reduce(
+    (sum, item) => (item.approved ? sum + Number(item.event.fee || 0) : sum),
+    0
+  );
+  const totalPendingFees = eventsRegistered.reduce(
+    (sum, item) => (!item.approved ? sum + Number(item.event.fee || 0) : sum),
+    0
+  );
 
-  const totalPendingFees = eventsRegistered.reduce((sum, item) => {
-    return !item.approved ? sum + Number(item.event.fee || 0) : sum;
-  }, 0);
+  const totalUsers = eventsRegistered.length;
+  const approvedUsers = eventsRegistered.filter((item) => item.approved).length;
+  const pendingUsers = eventsRegistered.filter((item) => !item.approved).length;
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -239,6 +246,7 @@ const UserEventRegistered = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
   return (
     <div className="p-4 bg-gray-900 min-h-screen">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -248,32 +256,65 @@ const UserEventRegistered = () => {
         </h1>
 
         <div className="flex flex-wrap gap-4">
-          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-blue-500 flex items-center gap-2">
+          {/* User Statistics Cards */}
+          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-yellow-500 flex items-center gap-3">
+            <FaUser className="text-yellow-400 text-xl" />
+            <div>
+              <p className="text-sm text-gray-400">Pending Registrations</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-white font-bold text-xl">{pendingUsers}</p>
+                <p className="text-gray-400 text-sm">users</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-green-500 flex items-center gap-3">
+            <FaUser className="text-green-400 text-xl" />
+            <div>
+              <p className="text-sm text-gray-400">Approved Registrations</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-white font-bold text-xl">{approvedUsers}</p>
+                <p className="text-gray-400 text-sm">users</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-blue-500 flex items-center gap-3">
+            <FaUser className="text-blue-400 text-xl" />
+            <div>
+              <p className="text-sm text-gray-400">Total Registrations</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-white font-bold text-xl">{totalUsers}</p>
+                <p className="text-gray-400 text-sm">users</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Fee Statistics Cards */}
+          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-yellow-500 flex items-center gap-3">
             <FaMoneyBillWave className="text-yellow-400 text-xl" />
             <div>
-              <p className="text-sm text-gray-400">Pending Registration Fees</p>
+              <p className="text-sm text-gray-400">Pending Fees</p>
               <p className="text-white font-bold">
                 {formatCurrency(totalPendingFees)}
               </p>
             </div>
           </div>
 
-          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-green-500 flex items-center gap-2">
+          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-green-500 flex items-center gap-3">
             <FaMoneyBillWave className="text-green-400 text-xl" />
             <div>
-              <p className="text-sm text-gray-400">
-                Approved Registration Fees
-              </p>
+              <p className="text-sm text-gray-400">Approved Fees</p>
               <p className="text-white font-bold">
                 {formatCurrency(totalApprovedFees)}
               </p>
             </div>
           </div>
 
-          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-white flex items-center gap-2">
+          <div className="bg-gray-800 px-4 py-3 rounded-lg border border-white flex items-center gap-3">
             <FaMoneyBillWave className="text-white text-xl" />
             <div>
-              <p className="text-sm text-gray-400">Total Registration Fees</p>
+              <p className="text-sm text-gray-400">Total Fees</p>
               <p className="text-white font-bold">
                 {formatCurrency(totalFees)}
               </p>
