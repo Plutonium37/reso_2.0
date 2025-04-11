@@ -64,7 +64,7 @@ model Registration {
   event   Event @relation(fields: [eventId], references: [id])
   eventId Int
 
-  team      Team[]
+  team       Team? 
 }
 
 model Team {
@@ -73,5 +73,5 @@ model Team {
   players  Json
 
   registration   Registration @relation(fields: [registrationId], references: [id])
-  registrationId Int
+  registrationId Int          @unique
 }

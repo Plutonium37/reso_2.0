@@ -1,6 +1,6 @@
 import axios from "../../utils/axios";
 import { useEffect, useState, useRef } from "react";
-import Pdf from "../../utils/Pdf";
+import Pdf from "../../utils/Pdf"; // Make sure this imports your Pdf component
 import toast from "react-hot-toast";
 import {
   FaSpinner,
@@ -210,6 +210,7 @@ const RegisteredUser = () => {
       </div>
     );
   }
+
   // Calculate statistics
   const totalFees = eventsRegistered.reduce(
     (sum, item) => sum + Number(item.event.fee || 0),
@@ -313,6 +314,32 @@ const RegisteredUser = () => {
           </div>
         </div>
       </div>
+
+      {/* PDF Preview Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div
+            ref={modalRef}
+            className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            <div className="sticky top-0 bg-gray-800 p-4 border-b border-gray-700 flex justify-between items-center">
+              <h2 className="text-xl font-bold text-blue-400">
+                Registration Details - {selectedItem.event?.event}
+              </h2>
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="text-gray-400 hover:text-white"
+              >
+                <IoClose size={24} />
+              </button>
+            </div>
+            <div className="p-6">
+              <Pdf item={selectedItem} />
+            </div>
+          </div>
+        </div>
+      )}
+
       {sortedEvents.length > 0 ? (
         <div className="grid gap-4">
           {sortedEvents.map((item) => (

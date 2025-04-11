@@ -29,6 +29,14 @@ const LandingHeader = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    if (location.pathname !== "/") {
+      navigate("/");
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
@@ -75,14 +83,17 @@ const LandingHeader = () => {
   return (
     <nav className={`fixed top-0 left-0 w-full px-6 py-3 flex justify-between items-center transition-all duration-300 z-50 ${
       isScrolled 
-        ? "bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-red-500/30" 
-        : "bg-transparent"
+        ? "bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-blue-500/30" 
+        : "bg-blue-950"
     }`}>
-      <div className="text-white">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent">
+      <button 
+        onClick={handleLogoClick}
+        className="text-white hover:opacity-80 transition-opacity"
+      >
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-blue-300 bg-clip-text text-transparent">
           RESO
         </h1>
-      </div>
+      </button>
 
       <div className="hidden md:flex items-center space-x-6">
         {sections.map((section) => (
@@ -91,8 +102,8 @@ const LandingHeader = () => {
             onClick={() => handleNavClick(section.id as "home" | "event" | "about")}
             className={`flex items-center px-3 py-2 rounded-md transition-all duration-300 ${
               location.pathname === "/" && activeSection === section.id
-                ? "text-red-500 font-medium"
-                : "text-gray-300 hover:text-red-400"
+                ? "text-blue-400 font-medium"
+                : "text-gray-300 hover:text-blue-400"
             }`}
           >
             {section.icon}
@@ -104,16 +115,16 @@ const LandingHeader = () => {
       <div className="flex items-center space-x-4">
         <RouterLink
           to="/signin"
-          className="hidden md:flex items-center px-4 py-2 text-gray-300 hover:text-red-400 transition duration-300"
+          className="hidden md:flex items-center px-4 py-2 text-gray-300 hover:text-blue-400 transition duration-300"
         >
           <FiLogIn className="mr-2" />
-          Login
+          Sign In
         </RouterLink>
         <RouterLink
           to="/signup"
-          className="relative inline-flex items-center px-6 py-2 font-medium tracking-wider text-white transition-all duration-300 ease-out bg-gradient-to-r from-red-600 to-amber-500 rounded-full group hover:shadow-lg hover:shadow-red-500/30 overflow-hidden"
+          className="relative inline-flex items-center px-6 py-2 font-medium tracking-wider text-white transition-all duration-300 ease-out bg-gradient-to-r from-blue-600 to-blue-400 rounded-full group hover:shadow-lg hover:shadow-blue-500/30 overflow-hidden"
         >
-          <span className="absolute inset-0 bg-gradient-to-r from-red-500 to-amber-400 opacity-0 group-hover:opacity-100 transition duration-300"></span>
+          <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-300 opacity-0 group-hover:opacity-100 transition duration-300"></span>
           <span className="relative z-10 flex items-center">
             Register
           </span>

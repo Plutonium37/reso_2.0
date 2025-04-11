@@ -142,7 +142,7 @@ interface Player {
 }
 
 interface CustomRequest extends Request {
-  uid?: number;
+  userId?: number;
   event?: string;
   gender?: "male" | "female" | "other" | null;
   name?: string;
@@ -163,7 +163,7 @@ export const userRegisterMiddleware = async (
   next: NextFunction
 ) => {
   try {
-    const { uid } = req;
+    const { userId } = req;
 
     const {
       event,
@@ -256,9 +256,8 @@ export const userRegisterMiddleware = async (
       res.status(409).json({ message: "Event doesn't exist" });
       return;
     }
-
     const registeredDetails = await prisma.registration.findMany({
-      where: { userId: uid },
+      where: { userId: userId },
     });
     const filtered = registeredDetails.filter(
       (item) => item.eventId === eventExist.id

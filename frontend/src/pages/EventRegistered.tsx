@@ -98,7 +98,7 @@ const EventRegistered = () => {
       </div>
     );
   }
-
+console.log(eventsRegistered)
   return (
     <div className="p-4 md:p-6">
       {selectedItem && (
@@ -125,6 +125,7 @@ const EventRegistered = () => {
       {eventsRegistered && eventsRegistered.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {eventsRegistered.map((item, index) => (
+            
             <div
               key={index}
               className="bg-gray-800 rounded-lg border border-gray-700 p-5 hover:border-blue-500 transition-colors"

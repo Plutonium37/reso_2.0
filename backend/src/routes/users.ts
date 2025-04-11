@@ -201,7 +201,7 @@ router.post(
 );
 
 interface CustomRequestRegister extends Request {
-  uid?: number;
+  userId?: number;
 }
 
 //get user event registered details
@@ -209,10 +209,10 @@ router.get(
   "/registered",
   userValidate,
   async (req: CustomRequestRegister, res: Response) => {
-    const { uid } = req;
+    const { userId } = req;
     try {
       const registeredDetails = await prisma.registration.findMany({
-        where: { userId: uid },
+        where: { userId: userId },
         select: {
           id: true,
           createdAt: true,
@@ -258,7 +258,7 @@ router.get(
 );
 
 interface CustomRequestCheck extends Request {
-  uid?: number;
+  userId?: number;
 }
 
 // check user is regitered to a specific event or not
@@ -266,7 +266,7 @@ router.get(
   "/check",
   userValidate,
   async (req: CustomRequestCheck, res: Response) => {
-    const { uid } = req;
+    const { userId } = req;
     const event = req.query.event as string;
 
     try {
@@ -289,7 +289,7 @@ router.get(
       }
 
       const registeredDetails = await prisma.registration.findMany({
-        where: { userId: uid },
+        where: { userId: userId },
       });
 
       const alreadyRegistered = registeredDetails.some(

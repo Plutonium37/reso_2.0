@@ -48,7 +48,7 @@ const Signin = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-900 p-4">
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg bg-gray-800 py-8 px-6 sm:px-8 md:px-10 rounded-xl shadow-2xl border border-gray-700">
         <h1 className="text-3xl sm:text-4xl font-bold text-center text-blue-400 mb-6">
-          Log In
+          Sign In
         </h1>
 
         <form noValidate className="mb-5" onSubmit={handleSubmit(onSubmit)}>
