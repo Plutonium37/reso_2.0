@@ -3,7 +3,8 @@ import Input from "../Input";
 import Gender from "../Gender";
 import toast from "react-hot-toast";
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import axios from "../../utils/axios";
 import { useEffect, useState } from "react";
 
 interface Props {
@@ -43,7 +44,7 @@ const CommonForm: React.FC<Props> = ({ event }) => {
 
       try {
         const response = await axios.get(
-          `http://localhost:4000/users/check?event=${event?.toLowerCase()}`,
+          `/users/check?event=${event?.toLowerCase()}`,
           {
             headers: {
               Authorization: token,
@@ -80,7 +81,6 @@ const CommonForm: React.FC<Props> = ({ event }) => {
     }
   }, [event]);
 
-  console.log("Event prop:", event);
   const eventRegister: SubmitHandler<FormData> = async (data) => {
     const token = localStorage.getItem("Authorization");
     if (!token) {
@@ -90,7 +90,7 @@ const CommonForm: React.FC<Props> = ({ event }) => {
     }
     try {
       const response = await axios.post(
-        "http://localhost:4000/users/register",
+        "/users/register",
         {
           event,
           ...data,

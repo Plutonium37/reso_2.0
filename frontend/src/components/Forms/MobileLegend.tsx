@@ -3,7 +3,8 @@ import Input from "../Input";
 import Gender from "../Gender";
 import toast from "react-hot-toast";
 import { useForm, SubmitHandler } from "react-hook-form";
-import axios, { AxiosError } from "axios";
+import axios from "../../utils/axios";
+import { AxiosError } from "axios";
 import { useState, useEffect } from "react";
 
 interface Props {
@@ -12,29 +13,44 @@ interface Props {
 
 interface FormData {
   name: string;
-  teamLeader: string;
-  teamLeaderId: number;
+  player1: string;
+  player1Id: number;
   gender1: string;
-  Player2: string;
-  Player2Id: number;
+  player2: string;
+  player2Id: number;
   gender2: string;
-  Player3: string;
-  Player3Id: number;
+  player3: string;
+  player3Id: number;
   gender3: string;
-  Player4: string;
-  Player4Id: number;
+  player4: string;
+  player4Id: number;
   gender4: string;
-  Player5: string;
-  Player5Id: number;
+  player5: string;
+  player5Id: number;
   gender5: string;
-  Player6?: string;
-  Player6Id?: number;
+  player6?: string;
+  player6Id?: number;
   gender6?: string;
   address: string;
   contact: number;
   transactionId?: string;
   bankingName?: string;
 }
+type Player = {
+  name: string;
+  gameId: string;
+  gender: string;
+  teamLeader: boolean;
+};
+
+type RegisterPayload = {
+  event: string | undefined;
+  teamName: string;
+  address: string;
+  transactionId: string | undefined;
+  players: Player[];
+  individual: boolean;
+};
 
 interface CheckResponse {
   fee: number;
@@ -46,7 +62,7 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
   const [alreadyRegistered, setAlreadyRegistered] = useState(false);
   const [fee, setFee] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [gameRegistrationOpen, setGameRegistrationOpen] = useState<boolean | null>(null);
   const {
     register,
     handleSubmit,
@@ -64,7 +80,7 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
 
       try {
         const response = await axios.get<CheckResponse>(
-          `http://localhost:4000/users/check?event=${event?.toLowerCase()}`,
+          `/users/check?event=${event?.toLowerCase()}`,
           {
             headers: {
               Authorization: token,
@@ -87,32 +103,39 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
             axiosError.response?.data?.message || "Something went wrong"
           );
         }
+        
       } finally {
+        setLoading(false);
+      }
+    };
+    const fetchStatus = async () => {
+      try {
+        const response = await axios.get("/users/game-status");
+        setGameRegistrationOpen(response.data.registrationOpen);
+      } catch (err) {
+        console.error("Error fetching registration status", err);
+        setGameRegistrationOpen(true); 
+      }finally {
         setLoading(false);
       }
     };
 
     if (event) {
       checkRegistration();
+      fetchStatus();
     }
   }, [event]);
-
-  const eventRegister = async (data: FormData) => {
+  const eventRegister = async (requestData: RegisterPayload) => {
     const token = localStorage.getItem("Authorization");
     if (!token) {
       toast.error("No authorization token found");
       window.location.href = "/";
       return;
     }
-
     try {
       const response = await axios.post(
-        "http://localhost:4000/users/register",
-        {
-          event,
-          ...data,
-          individual: false,
-        },
+        "/users/register",
+        requestData,
         {
           headers: {
             Authorization: token,
@@ -120,7 +143,7 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
         }
       );
       toast.success(response.data.message);
-      window.location.href = "/";
+      window.location.href = "/profile";
     } catch (error) {
       const axiosError = error as AxiosError<{ message?: string }>;
       toast.error(axiosError.response?.data?.message || "Something went wrong");
@@ -129,7 +152,48 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     if (showPayment) {
-      eventRegister(data);
+      const players = [];
+
+      // Required players (1 to 5)
+      for (let i = 1; i <= 5; i++) {
+        players.push({
+          name: (data as any)[`player${i}`],
+          gameId: (data as any)[`player${i}Id`],
+          gender: (data as any)[`gender${i}`],
+          teamLeader: i === 1, // Player1 is the team leader
+        });
+      }
+
+      // Optional substitutes (e.g., Player6)
+      const subs = [6]; // Add more if needed like 7, 8, etc.
+      subs.forEach((i) => {
+        const name = (data as any)[`player${i}`];
+        const gameId = (data as any)[`player${i}Id`];
+        const gender = (data as any)[`gender${i}`];
+
+        if (name && gameId && gender) {
+          players.push({
+            name,
+            gameId,
+            gender,
+            teamLeader: false,
+          });
+        }
+      });
+
+      const requestData = {
+        event,
+        name: data.name,
+        teamName: data.name,
+        contact: data.contact,
+        address: data.address,
+        transactionId: data.transactionId,
+        bankingName: data.bankingName,
+        players,
+        individual: false,
+      };
+
+      eventRegister(requestData);
     } else {
       setShowPayment(true);
     }
@@ -153,7 +217,16 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
       </div>
     );
   }
-
+  if (!gameRegistrationOpen) {
+    return (
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white p-4">
+        <div className="bg-gray-800 p-8 rounded-xl shadow-lg border border-gray-700 max-w-md w-full text-center">
+          <h1 className="text-3xl font-bold mb-4 text-blue-400">🚫 Registration Closed for Mobile Legends</h1>
+          <p className="text-gray-300">Please check back later for updates!</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-4xl mx-auto px-4">
       <form className="grid gap-3" onSubmit={handleSubmit(onSubmit)}>
@@ -171,7 +244,7 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
               })}
               error={errors.name?.message as string | undefined}
             />
-            
+
             {/* Player Information Grid */}
             <div className="grid grid-cols-1 gap-6 mb-2">
               {/* Player Card - Team Leader */}
@@ -180,21 +253,21 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
                     label="Name"
-                    id="teamLeader"
+                    id="player1"
                     type="text"
-                    register={register("teamLeader", {
+                    register={register("player1", {
                       required: "Team Leader Name is required",
                     })}
-                    error={errors.teamLeader?.message as string | undefined}
+                    error={errors.player1?.message as string | undefined}
                   />
                   <Input
                     label="ID"
-                    id="teamLeaderId"
+                    id="player1Id"
                     type="number"
-                    register={register("teamLeaderId", {
+                    register={register("player1Id", {
                       required: "Team Leader ID is required",
                     })}
-                    error={errors.teamLeaderId?.message as string | undefined}
+                    error={errors.player1Id?.message as string | undefined}
                   />
                   <Gender
                     register={register("gender1", {
@@ -211,21 +284,21 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
                     label="Name"
-                    id="Player2"
+                    id="player2"
                     type="text"
-                    register={register("Player2", {
+                    register={register("player2", {
                       required: "Player 2 Name is required",
                     })}
-                    error={errors.Player2?.message as string | undefined}
+                    error={errors.player2?.message as string | undefined}
                   />
                   <Input
                     label="ID"
-                    id="Player2Id"
+                    id="player2Id"
                     type="number"
-                    register={register("Player2Id", {
+                    register={register("player2Id", {
                       required: "Player 2 ID is required",
                     })}
-                    error={errors.Player2Id?.message as string | undefined}
+                    error={errors.player2Id?.message as string | undefined}
                   />
                   <Gender
                     register={register("gender2", {
@@ -242,21 +315,21 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
                     label="Name"
-                    id="Player3"
+                    id="player3"
                     type="text"
-                    register={register("Player3", {
+                    register={register("player3", {
                       required: "Player 3 Name is required",
                     })}
-                    error={errors.Player3?.message as string | undefined}
+                    error={errors.player3?.message as string | undefined}
                   />
                   <Input
                     label="ID"
-                    id="Player3Id"
+                    id="player3Id"
                     type="number"
-                    register={register("Player3Id", {
+                    register={register("player3Id", {
                       required: "Player 3 ID is required",
                     })}
-                    error={errors.Player3Id?.message as string | undefined}
+                    error={errors.player3Id?.message as string | undefined}
                   />
                   <Gender
                     register={register("gender3", {
@@ -273,21 +346,21 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
                     label="Name"
-                    id="Player4"
+                    id="player4"
                     type="text"
-                    register={register("Player4", {
+                    register={register("player4", {
                       required: "Player 4 Name is required",
                     })}
-                    error={errors.Player4?.message as string | undefined}
+                    error={errors.player4?.message as string | undefined}
                   />
                   <Input
                     label="ID"
-                    id="Player4Id"
+                    id="player4Id"
                     type="number"
-                    register={register("Player4Id", {
+                    register={register("player4Id", {
                       required: "Player 4 ID is required",
                     })}
-                    error={errors.Player4Id?.message as string | undefined}
+                    error={errors.player4Id?.message as string | undefined}
                   />
                   <Gender
                     register={register("gender4", {
@@ -304,21 +377,21 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
                     label="Name"
-                    id="Player5"
+                    id="player5"
                     type="text"
-                    register={register("Player5", {
+                    register={register("player5", {
                       required: "Player 5 Name is required",
                     })}
-                    error={errors.Player5?.message as string | undefined}
+                    error={errors.player5?.message as string | undefined}
                   />
                   <Input
                     label="ID"
-                    id="Player5Id"
+                    id="player5Id"
                     type="number"
-                    register={register("Player5Id", {
+                    register={register("player5Id", {
                       required: "Player 5 ID is required",
                     })}
-                    error={errors.Player5Id?.message as string | undefined}
+                    error={errors.player5Id?.message as string | undefined}
                   />
                   <Gender
                     register={register("gender5", {
@@ -331,19 +404,21 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
 
               {/* Player Card - Substitute (Optional) */}
               <div className="bg-gray-800 p-4 rounded-lg">
-                <h3 className="text-blue-400 font-medium mb-3">Substitute (Optional)</h3>
+                <h3 className="text-blue-400 font-medium mb-3">
+                  Substitute (Optional)
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
                     label="Name"
                     id="Player6"
                     type="text"
-                    register={register("Player6")}
+                    register={register("player6")}
                   />
                   <Input
                     label="ID"
                     id="Player6Id"
                     type="number"
-                    register={register("Player6Id")}
+                    register={register("player6Id")}
                   />
                   <Gender
                     register={register("gender6")}
@@ -425,10 +500,7 @@ const MobileLegend: React.FC<Props> = ({ event }) => {
                 type="button"
                 onClick={() => setShowPayment(false)}
               />
-              <Button
-                label="Register"
-                type="submit"
-              />
+              <Button label="Register" type="submit" />
             </div>
           </div>
         )}

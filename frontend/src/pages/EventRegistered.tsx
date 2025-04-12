@@ -1,7 +1,15 @@
 import axios from "../utils/axios";
 import { useEffect, useState, useRef } from "react";
 import Pdf from "../utils/Pdf";
-import { FiDownload, FiX, FiCalendar, FiMail, FiUser, FiCreditCard, FiDollarSign } from "react-icons/fi";
+import {
+  FiDownload,
+  FiX,
+  FiCalendar,
+  FiMail,
+  FiUser,
+  FiCreditCard,
+  FiDollarSign,
+} from "react-icons/fi";
 
 type RegisteredEvent = {
   event: {
@@ -31,7 +39,15 @@ type RegisteredEvent = {
   createdAt: string;
 };
 
-const InfoRow = ({ label, value, icon: Icon }: { label: string; value: string; icon: React.ElementType }) => (
+const InfoRow = ({
+  label,
+  value,
+  icon: Icon,
+}: {
+  label: string;
+  value: string;
+  icon: React.ElementType;
+}) => (
   <div className="flex items-start mb-3">
     <div className="text-blue-400 mr-3 mt-1">
       <Icon className="text-lg" />
@@ -44,15 +60,22 @@ const InfoRow = ({ label, value, icon: Icon }: { label: string; value: string; i
 );
 
 const EventRegistered = () => {
-  const [eventsRegistered, setEventsRegistered] = useState<RegisteredEvent[]>([]);
-  const [selectedItem, setSelectedItem] = useState<RegisteredEvent | null>(null);
+  const [eventsRegistered, setEventsRegistered] = useState<RegisteredEvent[]>(
+    []
+  );
+  const [selectedItem, setSelectedItem] = useState<RegisteredEvent | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Close modal when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         setSelectedItem(null);
       }
     };
@@ -98,34 +121,37 @@ const EventRegistered = () => {
       </div>
     );
   }
-console.log(eventsRegistered)
   return (
     <div className="p-4 md:p-6">
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-          <div 
+          <div
             ref={modalRef}
-            className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full relative border border-gray-700"
+            className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full relative border border-gray-700 flex flex-col"
+            style={{ maxHeight: "90vh" }}
           >
+            {/* Close button (top-right) */}
             <button
               onClick={() => setSelectedItem(null)}
-              className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-colors"
+              className="absolute -top-3 -right-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-colors z-10"
             >
               <FiX size={20} />
             </button>
-            <div className="p-4">
+
+            {/* Scrollable PDF content */}
+            <div className="overflow-y-auto p-4">
               <Pdf item={selectedItem} />
             </div>
           </div>
         </div>
       )}
-
-      <h2 className="text-2xl font-bold text-blue-400 mb-6">Registered Events</h2>
+      <h2 className="text-2xl font-bold text-blue-400 mb-6">
+        Registered Events
+      </h2>
 
       {eventsRegistered && eventsRegistered.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {eventsRegistered.map((item, index) => (
-            
             <div
               key={index}
               className="bg-gray-800 rounded-lg border border-gray-700 p-5 hover:border-blue-500 transition-colors"
@@ -134,17 +160,19 @@ console.log(eventsRegistered)
                 <h3 className="text-xl font-bold text-blue-400 truncate">
                   {item.event?.event || "Event Name N/A"}
                 </h3>
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  item.approved 
-                    ? "bg-green-900/50 text-green-400" 
-                    : "bg-yellow-900/50 text-yellow-400"
-                }`}>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
+                    item.approved
+                      ? "bg-green-900/50 text-green-400"
+                      : "bg-yellow-900/50 text-yellow-400"
+                  }`}
+                >
                   {item.approved ? "Approved" : "Pending"}
                 </span>
               </div>
 
               <div className="space-y-3">
-                <InfoRow 
+                <InfoRow
                   icon={FiCalendar}
                   label="Date of Registration"
                   value={new Date(item.createdAt).toLocaleString("en-IN", {
@@ -157,12 +185,12 @@ console.log(eventsRegistered)
                     hour12: true,
                   })}
                 />
-                <InfoRow 
+                <InfoRow
                   icon={FiMail}
                   label="Email"
                   value={item.user?.email || "N/A"}
                 />
-                <InfoRow 
+                <InfoRow
                   icon={FiUser}
                   label={item.individual ? "Name" : "Team Name"}
                   value={
@@ -171,12 +199,13 @@ console.log(eventsRegistered)
                       : item.team?.teamName || "No team name"
                   }
                 />
-                <InfoRow 
+
+                <InfoRow
                   icon={FiCreditCard}
                   label="Transaction ID"
                   value={item.transactionId || "N/A"}
                 />
-                <InfoRow 
+                <InfoRow
                   icon={FiDollarSign}
                   label="Banking Name"
                   value={item.bankingName || "N/A"}
@@ -198,7 +227,9 @@ console.log(eventsRegistered)
           <div className="text-gray-400 mb-4">
             <FiCalendar size={48} className="mx-auto opacity-50" />
           </div>
-          <h3 className="text-xl font-medium text-gray-300 mb-2">No events registered yet</h3>
+          <h3 className="text-xl font-medium text-gray-300 mb-2">
+            No events registered yet
+          </h3>
           <p className="text-gray-500">You haven't registered for any events</p>
         </div>
       )}

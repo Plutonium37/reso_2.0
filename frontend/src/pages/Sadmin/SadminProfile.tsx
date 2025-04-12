@@ -14,14 +14,14 @@ type UserProfile = {
 const AdminProfile = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(
-    null
-  );
+  const [registrationOpen, setRegistrationOpen] = useState<boolean | null>(null);
+  const [gameRegistrationOpen, setGameRegistrationOpen] = useState<boolean | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<boolean>(false);
+  const [selectedGameStatus, setSelectedGameStatus] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
         const storedProfile = localStorage.getItem("UserData");
         if (storedProfile) {
@@ -33,25 +33,24 @@ const AdminProfile = () => {
           setProfile(res.data.userData);
           localStorage.setItem("UserData", JSON.stringify(res.data.userData));
         }
-      } catch (error) {
-        console.error("Error fetching admin profile:", error);
-      }
-    };
-
-    const fetchRegistrationStatus = async () => {
-      try {
-        const res = await axios.get("/sadmin/registration-open", {
+        
+        const resStatus = await axios.get("/sadmin/registration-open", {
           headers: { Authorization: localStorage.getItem("Authorization") },
         });
-        setRegistrationOpen(res.data.registrationOpen);
-        setSelectedStatus(res.data.registrationOpen);
+        setRegistrationOpen(resStatus.data.registrationOpen);
+        setSelectedStatus(resStatus.data.registrationOpen);
+
+        const resGameStatus = await axios.get("/sadmin/game-registration-open", {
+          headers: { Authorization: localStorage.getItem("Authorization") },
+        });
+        setGameRegistrationOpen(resGameStatus.data.registrationOpen);
+        setSelectedGameStatus(resGameStatus.data.registrationOpen);
       } catch (error) {
-        console.error("Error fetching registration status:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    fetchProfile();
-    fetchRegistrationStatus();
+    fetchData();
   }, []);
 
   const handleLogOut = () => {
@@ -67,16 +66,34 @@ const AdminProfile = () => {
         "/sadmin/registration-open",
         { registrationOpen: selectedStatus },
         {
-          headers: {
-            Authorization: localStorage.getItem("Authorization"),
-          },
+          headers: { Authorization: localStorage.getItem("Authorization") },
         }
       );
       setRegistrationOpen(selectedStatus);
       toast.success(res.data.message);
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error("Error updating registration status:", error);
       toast.error("Failed to update registration status");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const updateGameRegistrationStatus = async () => {
+    setIsUpdating(true);
+    try {
+      const res = await axios.put(
+        "/sadmin/game-registration-open",
+        { gameRegistrationOpen: selectedGameStatus },
+        {
+          headers: { Authorization: localStorage.getItem("Authorization") },
+        }
+      );
+      setGameRegistrationOpen(selectedGameStatus);
+      toast.success(res.data.message);
+    } catch (error) {
+      console.error("Error updating game registration status:", error);
+      toast.error("Failed to update game registration status");
     } finally {
       setIsUpdating(false);
     }
@@ -143,11 +160,15 @@ const AdminProfile = () => {
                   </h1>
                   <div className="space-y-6">
                     <div className="flex flex-col md:flex-row md:justify-between">
-                      <h2 className="text-lg font-semibold text-gray-300">Name</h2>
+                      <h2 className="text-lg font-semibold text-gray-300">
+                        Name
+                      </h2>
                       <p className="text-gray-400">{profile?.name || "N/A"}</p>
                     </div>
                     <div className="flex flex-col md:flex-row md:justify-between">
-                      <h2 className="text-lg font-semibold text-gray-300">Email Address</h2>
+                      <h2 className="text-lg font-semibold text-gray-300">
+                        Email Address
+                      </h2>
                       <p className="text-gray-400">{profile?.email || "N/A"}</p>
                     </div>
                   </div>
@@ -157,7 +178,9 @@ const AdminProfile = () => {
                   </h2>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <p className="text-lg font-medium text-gray-300">Current Status:</p>
+                      <p className="text-lg font-medium text-gray-300">
+                        Current Status:
+                      </p>
                       <p
                         className={`px-3 py-1 rounded-full text-sm font-bold ${
                           registrationOpen
@@ -169,12 +192,12 @@ const AdminProfile = () => {
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-4 items-center">
-                      <label className="text-md text-gray-300">Change Status:</label>
+                      <label className="text-md text-gray-300">
+                        Change Status:
+                      </label>
                       <select
                         value={selectedStatus ? "open" : "closed"}
-                        onChange={(e) =>
-                          setSelectedStatus(e.target.value === "open")
-                        }
+                        onChange={(e) => setSelectedStatus(e.target.value === "open")}
                         className="p-2 bg-gray-800 border border-blue-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="open">Open</option>
@@ -182,6 +205,48 @@ const AdminProfile = () => {
                       </select>
                       <button
                         onClick={updateRegistrationStatus}
+                        disabled={isUpdating}
+                        className={`bg-blue-600 hover:bg-blue-500 transition px-4 py-2 rounded text-white font-semibold ${
+                          isUpdating ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                      >
+                        {isUpdating ? "Updating..." : "Update"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <h2 className="text-blue-400 text-xl font-semibold mt-10 mb-4 border-b border-blue-500 pb-2">
+                    Game Registration Control
+                  </h2>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <p className="text-lg font-medium text-gray-300">
+                        Current Status:
+                      </p>
+                      <p
+                        className={`px-3 py-1 rounded-full text-sm font-bold ${
+                          gameRegistrationOpen
+                            ? "bg-green-600 text-white"
+                            : "bg-red-600 text-white"
+                        }`}
+                      >
+                        {gameRegistrationOpen ? "Open" : "Closed"}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-4 items-center">
+                      <label className="text-md text-gray-300">
+                        Change Status:
+                      </label>
+                      <select
+                        value={selectedGameStatus ? "open" : "closed"}
+                        onChange={(e) => setSelectedGameStatus(e.target.value === "open")}
+                        className="p-2 bg-gray-800 border border-blue-500 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                      </select>
+                      <button
+                        onClick={updateGameRegistrationStatus}
                         disabled={isUpdating}
                         className={`bg-blue-600 hover:bg-blue-500 transition px-4 py-2 rounded text-white font-semibold ${
                           isUpdating ? "opacity-50 cursor-not-allowed" : ""

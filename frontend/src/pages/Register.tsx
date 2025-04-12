@@ -103,7 +103,7 @@ const Register = () => {
   
   const specialComponents: Record<string, React.ElementType> = {
     bgmi: Bgmi,
-    mobileLegend: MobileLegend,
+    mobilelegend: MobileLegend,
   };
 
   const SelectedComponent =
